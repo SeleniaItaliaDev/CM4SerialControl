@@ -1,6 +1,6 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
-import { sendLedCommand } from './serial';
+import { sendLedCommand } from './serial.js';
 
 function createWindow() {
   const win = new BrowserWindow({
