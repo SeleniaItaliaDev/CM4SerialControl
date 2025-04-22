@@ -17,7 +17,7 @@ function buildPacket(peripheral, payload) {
   return Buffer.from([...header, peripheral, length, ...payload, check]);
 }
 
-export async function sendLedCommand(on) {
+async function sendLedCommand(on) {
   const payload = [128, 72, on ? 7 : 0];  // LED mode
   const packet = buildPacket(10, payload);
 
@@ -28,3 +28,5 @@ export async function sendLedCommand(on) {
     });
   });
 }
+
+export { sendLedCommand };
