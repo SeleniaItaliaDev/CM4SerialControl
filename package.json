@@ -1,0 +1,17 @@
+{
+  "name": "cm4serialcontrol",
+  "version": "1.0.0",
+  "description": "App (ElectronJS + Node.js) to communicate with multi-function electronic boards via RS485, displaying a nice UI to interact with.",
+  "main": "main.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "electron ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "electron": "^35.2.0",
+    "serialport": "^13.0.0"
+  }
+}
