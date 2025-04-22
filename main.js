@@ -1,7 +1,6 @@
-// import { app, BrowserWindow, ipcMain } from 'electron';
 const { app, BrowserWindow, ipcMain } = require('electron');
 const { join } = require('path');
-const { sendLedCommand } = require('./ledController');
+const { sendLedCommand } = require('./serial.js');
 
 function createWindow() {
   const win = new BrowserWindow({
