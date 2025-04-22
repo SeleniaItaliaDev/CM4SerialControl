@@ -1,7 +1,8 @@
-import { app, BrowserWindow, ipcMain } from 'electron';
-import path, { join } from 'path';
-import { sendLedCommand } from './serial.js';
-import { fileURLToPath } from 'url';
+const { app, BrowserWindow, ipcMain } = require('electron');
+const path = require('path');
+const { sendLedCommand } = require('./serial.js');
+const { fileURLToPath } = require('url');
+const { join } = path;
 
 // ESM __dirname workaround
 const __filename = fileURLToPath(import.meta.url);

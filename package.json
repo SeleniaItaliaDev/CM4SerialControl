@@ -13,7 +13,7 @@
   "type": "module",
   "license": "ISC",
   "dependencies": {
-    "electron": "^35.2.0",
+    "electron": "^24.8.8",
     "serialport": "^13.0.0"
   },
   "devDependencies": {
