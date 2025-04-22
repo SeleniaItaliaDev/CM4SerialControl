@@ -29,4 +29,4 @@ async function sendLedCommand(on) {
   });
 }
 
-export { sendLedCommand };
+module.exports = { sendLedCommand };
