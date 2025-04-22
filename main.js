@@ -1,13 +1,16 @@
 import { app, BrowserWindow, ipcMain } from 'electron';
 import { join } from 'path';
 import { sendLedCommand } from './serial.js';
+import { fileURLToPath } from 'url';
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
 
 function createWindow() {
   const win = new BrowserWindow({
     width: 400,
     height: 300,
     webPreferences: {
-      preload: join(__dirname, 'preload.js'),
+        preload: join(__dirname, 'preload.js'),
     }
   });
 
