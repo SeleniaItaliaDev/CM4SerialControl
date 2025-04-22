@@ -22,3 +22,6 @@ start:
 # Clean up node_modules and lock files
 clean:
 	rm -rf node_modules package-lock.json
+
+patch-serialport:
+	echo "const path = require('path');" | cat - node_modules/@serialport/stream/dist/index.js > temp && mv temp node_modules/@serialport/stream/dist/index.js

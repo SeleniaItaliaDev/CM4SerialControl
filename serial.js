@@ -1,4 +1,4 @@
-const { SerialPort } = require('@serialport/serialport');
+const { SerialPort } = require('serialport');
 
 // CONFIG
 const portPath = '/dev/ttyAMA2';

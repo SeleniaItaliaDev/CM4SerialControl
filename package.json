@@ -12,10 +12,10 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "electron": "^24.8.8",
-    "serialport": "^13.0.0"
+    "electron": "^24.8.8"
   },
   "devDependencies": {
-    "@electron/rebuild": "^3.7.2"
+    "@electron/rebuild": "^3.7.2",
+    "serialport": "^10.5.0"
   }
 }
