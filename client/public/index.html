@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8" />
+  <title>CM4 LED Control</title>
+  <style>
+    body {
+      font-family: sans-serif;
+      text-align: center;
+      margin-top: 50px;
+    }
+    button {
+      font-size: 20px;
+      padding: 10px 20px;
+      margin: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+  <h1>CM4 LED Control</h1>
+  <button id="startBtn">Turn ON LED</button>
+  <button id="stopBtn">Turn OFF LED</button>
+
+  <script>
+    const ws = new WebSocket("ws://localhost:8081");
+
+    ws.onopen = () => console.log("WebSocket connected");
+    ws.onerror = err => console.error("WebSocket error", err);
+    ws.onmessage = msg => console.log("Received:", msg.data);
+
+    document.getElementById("startBtn").onclick = () => {
+      ws.send(JSON.stringify({ cmd: "setLed", peripheral: 10, value: 7 }));
+    };
+
+    document.getElementById("stopBtn").onclick = () => {
+      ws.send(JSON.stringify({ cmd: "setLed", peripheral: 10, value: 0 }));
+    };
+  </script>
+</body>
+</html>
