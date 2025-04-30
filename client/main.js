@@ -6,11 +6,13 @@ function createWindow() {
     width: 400,
     height: 300,
     webPreferences: {
-      preload: path.join(__dirname, 'preload.js'), // optional
+      nodeIntegration: false,
+      contextIsolation: true,
     }
   });
 
-  win.loadFile('index.html');
+  win.loadFile(path.join(__dirname, 'public/index.html'));
 }
 
+app.commandLine.appendSwitch('disable-gpu');
 app.whenReady().then(createWindow);
