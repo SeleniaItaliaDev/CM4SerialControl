@@ -1,44 +1,64 @@
 // server/src/index.js
-
 const WebSocket = require('ws');
 const { SerialPort } = require('serialport');
-const { ReadlineParser } = require('@serialport/parser-readline');
 
-// CONFIG
+// === CONFIG ===
 const SERIAL_PATH = '/dev/ttyAMA2';
 const BAUD_RATE = 115200;
-const PORT = 8081;
+const WS_PORT = 8081;
 
-// Create WebSocket server
-const wss = new WebSocket.Server({ port: PORT });
-console.log(`✅ WebSocket server started on ws://localhost:${PORT}`);
+// === DEVICE STATE BUFFERS ===
+const state = {
+  perif10: {
+    ledValue: 0 // Bits 0–2
+  },
+  perif11: {
+    ledValue: 0 // Bits 0 & 2 for LEDOD3, LEDep
+  }
+};
 
-// Setup serial connection
-const port = new SerialPort({ path: SERIAL_PATH, baudRate: BAUD_RATE });
-
-port.on('open', () => console.log(`✅ Serial port ${SERIAL_PATH} opened at ${BAUD_RATE} baud`));
-port.on('error', err => console.error('❌ Serial error:', err.message));
-
-// Optional: for debugging serial input
-const parser = port.pipe(new ReadlineParser());
-parser.on('data', data => console.log('📥 Serial IN:', data));
-
+// === BUILD PACKET FUNCTION ===
 function buildPacket(peripheral, payload) {
   const header = [0xFF, 0x00, 0x00, 0x00, 0x03];
-  const len = payload.length;
-  const checksum = (peripheral + len + payload.reduce((a, b) => a + b, 0)) % 256;
+  const length = payload.length;
+  const checksum = (peripheral + length + payload.reduce((a, b) => a + b, 0)) % 256;
   const check = (256 - checksum) % 256;
-  return Buffer.from([...header, peripheral, len, ...payload, check]);
+  return Buffer.from([...header, peripheral, length, ...payload, check]);
 }
 
-function sendLedCommand(peripheral, value) {
-  const payload = [128, 72, value];
+// === PAYLOAD BUILDERS ===
+function buildPerif10Payload(data) {
+  return [128, 72, data.ledValue];
+}
+
+function buildPerif11Payload(data) {
+  return [128, 72, data.ledValue];
+}
+
+// === SERIAL SETUP ===
+const port = new SerialPort({ path: SERIAL_PATH, baudRate: BAUD_RATE });
+
+port.on('open', () => {
+  console.log(`✅ Serial port ${SERIAL_PATH} opened at ${BAUD_RATE} baud`);
+});
+
+port.on('data', buffer => {
+  console.log('📥 Serial IN (raw):', buffer.toString('hex'));
+});
+
+// === RS485 SEND ===
+function sendBuffer(peripheral, payload) {
   const packet = buildPacket(peripheral, payload);
   port.write(packet, err => {
-    if (err) console.error('❌ Write error:', err);
-    else console.log(`✅ Sent to perif ${peripheral}:`, packet.toString('hex'));
+    if (err) return console.error('❌ Serial error:', err);
+    console.log(`✅ Sent to perif ${peripheral}:`, packet.toString('hex'));
   });
 }
+
+// === WS SERVER ===
+const wss = new WebSocket.Server({ port: WS_PORT }, () => {
+  console.log(`✅ WebSocket server started on ws://localhost:${WS_PORT}`);
+});
 
 wss.on('connection', ws => {
   console.log('🔌 Client connected');
@@ -47,12 +67,19 @@ wss.on('connection', ws => {
     try {
       const data = JSON.parse(msg);
       if (data.cmd === 'setLed') {
-        sendLedCommand(data.peripheral, data.value);
+        if (data.peripheral === 10) state.perif10.ledValue = data.value;
+        if (data.peripheral === 11) state.perif11.ledValue = data.value;
       } else {
         console.warn('⚠️ Unknown command:', data);
       }
     } catch (err) {
-      console.error('❌ Message error:', err);
+      console.error('❌ JSON error:', err);
     }
   });
 });
+
+// === TRANSMISSION INTERVAL ===
+setInterval(() => {
+  sendBuffer(10, buildPerif10Payload(state.perif10));
+  sendBuffer(11, buildPerif11Payload(state.perif11));
+}, 100);
