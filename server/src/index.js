@@ -1,7 +1,7 @@
 // server/src/index.js
 
 const WebSocket = require('ws');
-const SerialPort = require('serialport');
+const { SerialPort } = require('serialport');
 const { ReadlineParser } = require('@serialport/parser-readline');
 
 // CONFIG
