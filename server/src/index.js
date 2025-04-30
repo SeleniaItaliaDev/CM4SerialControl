@@ -94,8 +94,8 @@ wss.on('connection', ws => {
 
 // === TRANSMISSION INTERVAL ===
 setInterval(() => {
-  sendBuffer(2, perif2.build());
-  sendBuffer(3, perif3.build());
-  sendBuffer(10, perif10.build());
-  sendBuffer(11, perif11.build());
+    sendBuffer(2, perif2.build(perif2.state));
+    sendBuffer(3, perif3.build(perif3.state));
+    sendBuffer(10, perif10.build(perif10.state));
+    sendBuffer(11, perif11.build(perif11.state));
 }, 100);
