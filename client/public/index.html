@@ -58,11 +58,11 @@
         ws.onerror = err => console.error("WebSocket error", err);
 
         document.getElementById("startBtn").onclick = () => {
-            ws.send(JSON.stringify({ cmd: "setLed", peripheral: 10, value: 7 }));
+            ws.send(JSON.stringify({ cmd: "setLed", peripheral: 10, value: true }));
         };
 
         document.getElementById("stopBtn").onclick = () => {
-            ws.send(JSON.stringify({ cmd: "setLed", peripheral: 10, value: 0 }));
+            ws.send(JSON.stringify({ cmd: "setLed", peripheral: 10, value: false }));
         };
 
         function sendCommand(cmd, peripheral) {
