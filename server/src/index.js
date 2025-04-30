@@ -14,7 +14,8 @@ const wss = new WebSocket.Server({ port: PORT });
 console.log(`✅ WebSocket server started on ws://localhost:${PORT}`);
 
 // Setup serial connection
-const port = new SerialPort(SERIAL_PATH, { baudRate: BAUD_RATE });
+const port = new SerialPort({ path: SERIAL_PATH, baudRate: BAUD_RATE });
+
 port.on('open', () => console.log(`✅ Serial port ${SERIAL_PATH} opened at ${BAUD_RATE} baud`));
 port.on('error', err => console.error('❌ Serial error:', err.message));
 
