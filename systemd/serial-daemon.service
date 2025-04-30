@@ -1,0 +1,11 @@
+[Unit]
+Description=CM4 Serial Control Daemon
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/node /home/pi/cm4-control-system/server/src/index.js
+Restart=always
+User=pi
+
+[Install]
+WantedBy=multi-user.target

@@ -1,5 +1,0 @@
-const { contextBridge, ipcRenderer } = require('electron');
-
-contextBridge.exposeInMainWorld('api', {
-  ledControl: (on) => ipcRenderer.invoke('led-control', on)
-});
