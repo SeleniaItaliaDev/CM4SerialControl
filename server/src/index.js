@@ -1,61 +1,23 @@
 // server/src/index.js
 const WebSocket = require('ws');
 const { SerialPort } = require('serialport');
+const buildPacket = require('./packet');
+const perif2 = require('./buffers/perif2');
+const perif3 = require('./buffers/perif3');
+const perif10 = require('./buffers/perif10');
+const perif11 = require('./buffers/perif11');
 
 // === CONFIG ===
 const SERIAL_PATH = '/dev/ttyAMA2';
 const BAUD_RATE = 115200;
 const WS_PORT = 8081;
 
-// === DEVICE STATE BUFFERS ===
-const state = {
-  perif10: {
-    ledValue: 0 // Bits 0–2
-  },
-  perif11: {
-    ledValue: 0 // Bits 0 & 2 for LEDOD3, LEDep
-  }
-};
-
-// === BUILD PACKET FUNCTION ===
-function buildPacket(peripheral, payload) {
-  const header = [0xFF, 0x00, 0x00, 0x00, 0x03];
-  const length = payload.length;
-  const checksum = (peripheral + length + payload.reduce((a, b) => a + b, 0)) % 256;
-  const check = (256 - checksum) % 256;
-  return Buffer.from([...header, peripheral, length, ...payload, check]);
-}
-
-// === PAYLOAD BUILDERS ===
-function buildPerif10Payload(data) {
-  return [128, 72, data.ledValue];
-}
-
-function buildPerif11Payload(data) {
-  return [128, 72, data.ledValue];
-}
-
-function buildSerialReadPayload() {
-  return [128, 'R'.charCodeAt(0)];
-}
-
-function buildFirmwareReadPayload() {
-  return [128, 'V'.charCodeAt(0)];
-}
-
-function buildResetPayload() {
-  return [128, 'r'.charCodeAt(0), 'e'.charCodeAt(0), 's'.charCodeAt(0)];
-}
-
-function buildBootloaderPayload(perif) {
-  return [128, 'p'.charCodeAt(0), 'r'.charCodeAt(0), 'o'.charCodeAt(0), perif, 'x'.charCodeAt(0)];
-}
+let lastClient = null;
 
 // === SERIAL SETUP ===
 const port = new SerialPort({ path: SERIAL_PATH, baudRate: BAUD_RATE });
-
 port.on('open', () => {
-  console.log(`✅ Serial port ${SERIAL_PATH} opened at ${BAUD_RATE} baud`);
+  console.log(`Serial port ${SERIAL_PATH} opened at ${BAUD_RATE} baud`);
 });
 
 // === INCOMING BUFFER PARSER ===
@@ -82,61 +44,58 @@ port.on('data', chunk => {
     const expectedChecksum = (256 - checksum) % 256;
 
     if (receivedChecksum === expectedChecksum) {
-      console.log(`📥 RX from perif ${perifId}:`, payload.toString('hex'));
-      if (perifId === 10 && payload[0] === 72) {
-        const temp = (payload[2] << 8) + payload[1];
-        console.log(`🌡️  Perif 10 Temp: ${temp}`);
+      console.log(`RX from perif ${perifId}:`, payload.toString('hex'));
+
+      if (lastClient) {
+        lastClient.send(JSON.stringify({
+          from: perifId,
+          payload: Array.from(payload)
+        }));
       }
     } else {
-      console.warn('⚠️ Invalid checksum');
+      console.warn('Invalid checksum');
     }
 
     rxBuffer = rxBuffer.slice(start + totalLength);
   }
 });
 
-// === RS485 SEND ===
 function sendBuffer(peripheral, payload) {
   const packet = buildPacket(peripheral, payload);
   port.write(packet, err => {
     if (err) return console.error('❌ Serial error:', err);
-    console.log(`✅ Sent to perif ${peripheral}:`, packet.toString('hex'));
+    console.log(`Sent to perif ${peripheral}:`, packet.toString('hex'));
   });
 }
 
 // === WS SERVER ===
 const wss = new WebSocket.Server({ port: WS_PORT }, () => {
-  console.log(`✅ WebSocket server started on ws://localhost:${WS_PORT}`);
+  console.log(`WebSocket server started on ws://localhost:${WS_PORT}`);
 });
 
 wss.on('connection', ws => {
-  console.log('🔌 Client connected');
+  console.log('Client connected');
+  lastClient = ws;
 
   ws.on('message', msg => {
     try {
       const data = JSON.parse(msg);
       if (data.cmd === 'setLed') {
-        if (data.peripheral === 10) state.perif10.ledValue = data.value;
-        if (data.peripheral === 11) state.perif11.ledValue = data.value;
-      } else if (data.cmd === 'readSerial') {
-        sendBuffer(data.peripheral, buildSerialReadPayload());
-      } else if (data.cmd === 'readFirmware') {
-        sendBuffer(data.peripheral, buildFirmwareReadPayload());
-      } else if (data.cmd === 'reset') {
-        sendBuffer(255, buildResetPayload());
-      } else if (data.cmd === 'bootloader') {
-        sendBuffer(255, buildBootloaderPayload(data.peripheral));
+        if (data.peripheral === 10) perif10.state.ledValue = data.value;
+        if (data.peripheral === 11) perif11.state.ledValue = data.value;
       } else {
-        console.warn('⚠️ Unknown command:', data);
+        console.warn('Unknown command:', data);
       }
     } catch (err) {
-      console.error('❌ JSON error:', err);
+      console.error('JSON error:', err);
     }
   });
 });
 
 // === TRANSMISSION INTERVAL ===
 setInterval(() => {
-  sendBuffer(10, buildPerif10Payload(state.perif10));
-  sendBuffer(11, buildPerif11Payload(state.perif11));
+  sendBuffer(2, perif2.build());
+  sendBuffer(3, perif3.build());
+  sendBuffer(10, perif10.build());
+  sendBuffer(11, perif11.build());
 }, 100);
