@@ -42,8 +42,41 @@ port.on('open', () => {
   console.log(`✅ Serial port ${SERIAL_PATH} opened at ${BAUD_RATE} baud`);
 });
 
-port.on('data', buffer => {
-  console.log('📥 Serial IN (raw):', buffer.toString('hex'));
+// === INCOMING BUFFER PARSER ===
+let rxBuffer = Buffer.alloc(0);
+
+port.on('data', chunk => {
+  rxBuffer = Buffer.concat([rxBuffer, chunk]);
+
+  while (rxBuffer.length >= 6) {
+    const start = rxBuffer.indexOf(Buffer.from([0xFF, 0x00, 0x00, 0x00, 0x03]));
+    if (start === -1 || rxBuffer.length < start + 6) break;
+
+    const offset = start + 5;
+    const perifId = rxBuffer[offset];
+    const length = rxBuffer[offset + 1];
+    const totalLength = 5 + 1 + 1 + length + 1;
+
+    if (rxBuffer.length < start + totalLength) break;
+
+    const packet = rxBuffer.slice(start, start + totalLength);
+    const payload = packet.slice(7, 7 + length);
+    const receivedChecksum = packet[7 + length];
+    const checksum = (perifId + length + payload.reduce((a, b) => a + b, 0)) % 256;
+    const expectedChecksum = (256 - checksum) % 256;
+
+    if (receivedChecksum === expectedChecksum) {
+      console.log(`📥 RX from perif ${perifId}:`, payload.toString('hex'));
+      if (perifId === 10 && payload[0] === 72) {
+        const temp = (payload[2] << 8) + payload[1];
+        console.log(`🌡️  Perif 10 Temp: ${temp}`);
+      }
+    } else {
+      console.warn('⚠️ Invalid checksum');
+    }
+
+    rxBuffer = rxBuffer.slice(start + totalLength);
+  }
 });
 
 // === RS485 SEND ===
