@@ -14,4 +14,5 @@ function createWindow() {
   win.loadFile(path.join(__dirname, 'public/index.html'));
 }
 
+app.commandLine.appendSwitch('disable-gpu');
 app.whenReady().then(createWindow);

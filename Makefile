@@ -10,7 +10,8 @@ client-install:
 
 .PHONY: client-start
 client-start:
-	cd $(CLIENT_DIR) && npm start
+	cd $(CLIENT_DIR) && LIBGL_ALWAYS_SOFTWARE=1 npm start
+
 
 .PHONY: client-rebuild
 client-rebuild:
