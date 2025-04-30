@@ -1,41 +1,76 @@
 <!DOCTYPE html>
 <html>
+
 <head>
-  <meta charset="UTF-8" />
-  <title>CM4 LED Control</title>
-  <style>
-    body {
-      font-family: sans-serif;
-      text-align: center;
-      margin-top: 50px;
-    }
-    button {
-      font-size: 20px;
-      padding: 10px 20px;
-      margin: 10px;
-      cursor: pointer;
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <title>CM4 LED Control</title>
+    <style>
+        body {
+            font-family: sans-serif;
+            text-align: center;
+            margin-top: 50px;
+        }
+
+        button {
+            font-size: 20px;
+            padding: 10px 20px;
+            margin: 10px;
+            cursor: pointer;
+        }
+    </style>
 </head>
+
 <body>
-  <h1>CM4 LED Control</h1>
-  <button id="startBtn">Turn ON LED</button>
-  <button id="stopBtn">Turn OFF LED</button>
+    <h1>CM4 LED Control</h1>
+    <button id="startBtn">Turn ON LED</button>
+    <button id="stopBtn">Turn OFF LED</button>
+    <h2>Device Actions</h2>
+    <button onclick="sendCommand('readSerial', 10)">Read Serial (Perif 10)</button>
+    <button onclick="sendCommand('readFirmware', 10)">Read Firmware (Perif 10)</button>
+    <button onclick="sendCommand('reset')">Reset Peripherals</button>
+    <button onclick="sendCommand('bootloader', 10)">Enter Bootloader (Perif 10)</button>
 
-  <script>
-    const ws = new WebSocket("ws://localhost:8081");
+    <h2>Serial Number</h2>
+    <p id="serialDisplay">Serial: N/A</p>
 
-    ws.onopen = () => console.log("WebSocket connected");
-    ws.onerror = err => console.error("WebSocket error", err);
-    ws.onmessage = msg => console.log("Received:", msg.data);
+    <script>
+        const ws = new WebSocket("ws://localhost:8081");
 
-    document.getElementById("startBtn").onclick = () => {
-      ws.send(JSON.stringify({ cmd: "setLed", peripheral: 10, value: 7 }));
-    };
 
-    document.getElementById("stopBtn").onclick = () => {
-      ws.send(JSON.stringify({ cmd: "setLed", peripheral: 10, value: 0 }));
-    };
-  </script>
+        ws.onopen = () => {
+            console.log('✅ WebSocket connected');
+        };
+
+        ws.onmessage = (event) => {
+            const data = JSON.parse(event.data);
+            console.log('📥 Response from server:', data);
+
+            // Example: check for serial number response
+            if (data.payload?.[1] === 'R'.charCodeAt(0)) {
+                const serial = data.payload.slice(2, 6)
+                    .map(byte => byte.toString(16).padStart(2, '0')).join('').toUpperCase();
+                document.getElementById('serialDisplay').textContent = `Serial: ${serial}`;
+            }
+
+            // You can add more handlers for other command responses (e.g., 'V', '72', etc.)
+        };
+
+        ws.onerror = err => console.error("WebSocket error", err);
+
+        document.getElementById("startBtn").onclick = () => {
+            ws.send(JSON.stringify({ cmd: "setLed", peripheral: 10, value: 7 }));
+        };
+
+        document.getElementById("stopBtn").onclick = () => {
+            ws.send(JSON.stringify({ cmd: "setLed", peripheral: 10, value: 0 }));
+        };
+
+        function sendCommand(cmd, peripheral) {
+            const msg = { cmd };
+            if (peripheral !== undefined) msg.peripheral = peripheral;
+            ws.send(JSON.stringify(msg));
+        }
+    </script>
 </body>
+
 </html>

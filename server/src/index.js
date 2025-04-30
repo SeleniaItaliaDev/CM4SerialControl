@@ -35,6 +35,22 @@ function buildPerif11Payload(data) {
   return [128, 72, data.ledValue];
 }
 
+function buildSerialReadPayload() {
+  return [128, 'R'.charCodeAt(0)];
+}
+
+function buildFirmwareReadPayload() {
+  return [128, 'V'.charCodeAt(0)];
+}
+
+function buildResetPayload() {
+  return [128, 'r'.charCodeAt(0), 'e'.charCodeAt(0), 's'.charCodeAt(0)];
+}
+
+function buildBootloaderPayload(perif) {
+  return [128, 'p'.charCodeAt(0), 'r'.charCodeAt(0), 'o'.charCodeAt(0), perif, 'x'.charCodeAt(0)];
+}
+
 // === SERIAL SETUP ===
 const port = new SerialPort({ path: SERIAL_PATH, baudRate: BAUD_RATE });
 
@@ -102,6 +118,14 @@ wss.on('connection', ws => {
       if (data.cmd === 'setLed') {
         if (data.peripheral === 10) state.perif10.ledValue = data.value;
         if (data.peripheral === 11) state.perif11.ledValue = data.value;
+      } else if (data.cmd === 'readSerial') {
+        sendBuffer(data.peripheral, buildSerialReadPayload());
+      } else if (data.cmd === 'readFirmware') {
+        sendBuffer(data.peripheral, buildFirmwareReadPayload());
+      } else if (data.cmd === 'reset') {
+        sendBuffer(255, buildResetPayload());
+      } else if (data.cmd === 'bootloader') {
+        sendBuffer(255, buildBootloaderPayload(data.peripheral));
       } else {
         console.warn('⚠️ Unknown command:', data);
       }
