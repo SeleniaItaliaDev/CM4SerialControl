@@ -44,7 +44,7 @@ port.on('data', chunk => {
     const expectedChecksum = (256 - checksum) % 256;
 
     if (receivedChecksum === expectedChecksum) {
-      console.log(`RX from perif ${perifId}:`, payload.toString('hex'));
+    console.log(`RX from perif ${perifId}:`, payload.toString('hex'));
 
       if (lastClient) {
         lastClient.send(JSON.stringify({
@@ -97,5 +97,5 @@ setInterval(() => {
     sendBuffer(2, perif2.build(perif2.state));
     sendBuffer(3, perif3.build(perif3.state));
     sendBuffer(10, perif10.build(perif10.state));
-    sendBuffer(11, perif11.build(perif11.state));
+    // sendBuffer(11, perif11.build(perif11.state));
 }, 100);
