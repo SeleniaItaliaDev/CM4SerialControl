@@ -18,6 +18,9 @@ export default function Home() {
         toast.error('WebSocket is not connected');
         return;
       }
+
+      // ideally here we should have 2 functions, one for ON and one for OFF
+      // or at least a single function that accepts a boolean parameter
       const newValue = ledOn ? true : false;
       ws.send(JSON.stringify({ cmd: 'setLed', peripheral: 10, value: newValue }));
       setLedOn(!ledOn);
