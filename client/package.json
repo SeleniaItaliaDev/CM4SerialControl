@@ -6,7 +6,8 @@
     "rebuild": "electron-rebuild",
     "dev": "vite",
     "electron": "electron main.js",
-    "start": "concurrently \"npm run dev --prefix serialcontrol-ui\" \"npm run electron\""
+    "start-old": "concurrently \"npm run dev --prefix serialcontrol-ui\" \"npm run electron\"",
+    "start": "NODE_ENV=development npx concurrently \"npm run dev --prefix serialcontrol-ui\" \"npm run electron\""
   },
   "keywords": [],
   "author": "",

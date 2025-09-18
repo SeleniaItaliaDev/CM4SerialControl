@@ -2,6 +2,13 @@
 CLIENT_DIR=client
 SERVER_DIR=server
 
+# ----- Electron & native dependencies (for Pi) -----
+.PHONY: client-install-pi
+client-install-pi:
+	cd $(CLIENT_DIR) && npm install electron --arch=armv7l --platform=linux
+	cd $(CLIENT_DIR) && npm install
+	cd $(CLIENT_DIR) && npx electron-rebuild
+
 # ----- Client commands -----
 
 .PHONY: client-install
