@@ -3,9 +3,11 @@ const path = require('path');
 const isDev = process.env.NODE_ENV === 'development';
 
 function createWindow () {
+  // Create the browser window, but not resizeable
   const win = new BrowserWindow({
     width: 1024,
     height: 600,
+    resizable: false,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,

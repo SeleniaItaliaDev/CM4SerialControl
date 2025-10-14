@@ -1,6 +1,6 @@
 # Path shortcuts
-CLIENT_DIR=client
-SERVER_DIR=server
+CLIENT_DIR=packages/ui-electron
+SERVER_DIR=packages/daemon
 
 # ----- Electron & native dependencies (for Pi) -----
 .PHONY: client-install-pi

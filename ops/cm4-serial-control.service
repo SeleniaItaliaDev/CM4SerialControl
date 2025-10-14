@@ -1,0 +1,13 @@
+[Unit]
+Description=CM4 Serial Control Daemon
+After=network.target
+
+[Service]
+WorkingDirectory=/opt/cm4-serial-control/packages/daemon
+ExecStart=/usr/bin/node /opt/cm4-serial-control/packages/daemon/src/index.js
+Restart=always
+User=pi
+Environment=NODE_ENV=production
+
+[Install]
+WantedBy=multi-user.target

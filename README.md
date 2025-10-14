@@ -1,4 +1,4 @@
-# CM4 Control — Monorepo
+# CM4 Serial Control — Monorepo
 
 <p><strong>Goal: </strong>Reliable control of an RS-485 board from a Raspberry Pi CM4.</p>
 <p><strong>Design: </strong>Split into a Node daemon (owns the serial bus) and a UI app (Electron/React) that talks to the daemon via WebSocket.</p>
@@ -11,12 +11,12 @@
 
 <h3>What’s inside</h3>
 <code>
-cm4-control/
+cm4-serial-control/
 ├─ package.json                 # npm workspaces
 ├─ Makefile                     # handy top-level commands
 ├─ README.md                    # (this file)
 ├─ ops/
-│  ├─ cm4-serial.service        # systemd unit (daemon)
+│  ├─ cm4-serial-control.service        # systemd unit (daemon)
 │  └─ install-daemon.sh         # optional helper
 └─ packages/
    ├─ daemon/                   # Node + serialport + WS server
@@ -72,18 +72,18 @@ sudo usermod -aG dialout,tty pi  # serial device access (logout/reboot after)
 
 <p><strong>Install files (adjust path if needed)</strong></p>
 <code>
-sudo cp ops/cm4-serial.service /etc/systemd/system/
+sudo cp ops/cm4-serial-control.service /etc/systemd/system/
 sudo systemctl daemon-reload
-sudo systemctl enable cm4-serial.service   # autostart on boot
-sudo systemctl start cm4-serial.service
-journalctl -u cm4-serial.service -f        # follow logs
+sudo systemctl enable cm4-serial-control.service   # autostart on boot
+sudo systemctl start cm4-serial-control.service
+journalctl -u cm4-serial-control.service -f        # follow logs
 </code>
 
 <p><strong>Edit the unit to match your path:</strong></p>
 <code>
 [Service]
-WorkingDirectory=/opt/cm4-control/packages/daemon
-ExecStart=/usr/bin/node /opt/cm4-control/packages/daemon/src/index.js
+WorkingDirectory=/opt/cm4-serial-control/packages/daemon
+ExecStart=/usr/bin/node /opt/cm4-serial-control/packages/daemon/src/index.js
 </code>
 
 # UI on the Pi:
