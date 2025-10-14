@@ -3,11 +3,13 @@
   "version": "1.0.0",
   "main": "main.js",
   "scripts": {
-    "rebuild": "electron-rebuild",
-    "dev": "vite",
+    "OLD-rebuild": "electron-rebuild",
+    "OLD-start": "concurrently \"npm run dev --prefix serialcontrol-ui\" \"npm run electron\"",
+    
     "electron": "electron main.js",
-    "start-old": "concurrently \"npm run dev --prefix serialcontrol-ui\" \"npm run electron\"",
-    "start": "NODE_ENV=development npx concurrently \"npm run dev --prefix serialcontrol-ui\" \"npm run electron\""
+    "start": "NODE_ENV=development npx concurrently \"npm run dev --prefix serialcontrol-ui\" \"npm run electron\"",
+    "build-renderer": "npm run build --prefix serialcontrol-ui",
+    "start:prod": "NODE_ENV=production electron main.js"
   },
   "keywords": [],
   "author": "",
@@ -19,7 +21,6 @@
   },
   "devDependencies": {
     "concurrently": "^9.2.1",
-    "electron-rebuild": "^3.2.9",
-    "vite": "^6.3.4"
+    "electron-rebuild": "^3.2.9"
   }
 }
