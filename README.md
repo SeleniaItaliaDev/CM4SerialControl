@@ -41,7 +41,7 @@ Daemon sends perif 2/3/10/11 buffers every 100 ms; parses replies; exposes minim
 
 </hr>
 
-<h3>Quick start (dev)</h3>
+# Quick start (dev)
 <p>Clone + install</p>
 <code>npm i</code>
 <p>Run daemon (serial + ws://localhost:8081)</p>
@@ -53,7 +53,7 @@ Daemon sends perif 2/3/10/11 buffers every 100 ms; parses replies; exposes minim
 <code>
 dev-daemon:        # run daemon locally
 	@npm --workspace packages/daemon run dev
-    
+
 dev-ui:            # run electron UI
 	@npm --workspace packages/ui-electron start
 
@@ -63,22 +63,25 @@ build-ui:          # package electron app
 </hr>
 
 # Deploy daemon as a service (Pi CM4)
-Prerequisites
-<code>sudo apt-get update
+<p><strong>Prerequisites:</strong></p>
+<code>
+sudo apt-get update
 sudo apt-get install -y build-essential python3 make
 sudo usermod -aG dialout,tty pi  # serial device access (logout/reboot after)
 </code>
 
-Install files (adjust path if needed)
-<code>sudo cp ops/cm4-serial.service /etc/systemd/system/
+<p><strong>Install files (adjust path if needed)</strong></p>
+<code>
+sudo cp ops/cm4-serial.service /etc/systemd/system/
 sudo systemctl daemon-reload
 sudo systemctl enable cm4-serial.service   # autostart on boot
 sudo systemctl start cm4-serial.service
 journalctl -u cm4-serial.service -f        # follow logs
 </code>
 
-Edit the unit to match your path:
-<code>[Service]
+<p><strong>Edit the unit to match your path:</strong></p>
+<code>
+[Service]
 WorkingDirectory=/opt/cm4-control/packages/daemon
 ExecStart=/usr/bin/node /opt/cm4-control/packages/daemon/src/index.js
 </code>
