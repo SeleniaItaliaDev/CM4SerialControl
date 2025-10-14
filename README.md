@@ -1,15 +1,16 @@
 # CM4 Control — Monorepo
 
-<strong>Goal :</strong>Reliable control of an RS-485 board from a Raspberry Pi CM4.
-<strong>Design :</strong>Split into a Node daemon (owns the serial bus) and a UI app (Electron/React) that talks to the daemon via WebSocket.
+<p><strong>Goal: </strong>Reliable control of an RS-485 board from a Raspberry Pi CM4.</p>
+<p><strong>Design: </strong>Split into a Node daemon (owns the serial bus) and a UI app (Electron/React) that talks to the daemon via WebSocket.</p>
 
-Why this split?
+<h4>Why this split?</h4>
 
-Stability: serialport in plain Node avoids Electron ABI rebuild hell on ARM.
-Resilience: Daemon runs as a systemd service (auto-start, auto-restart, logs).
-Independence: UI and daemon can be built, deployed, and updated separately.
+<p>Stability: serialport in plain Node avoids Electron ABI rebuild hell on ARM.</p>
+<p>Resilience: Daemon runs as a systemd service (auto-start, auto-restart, logs).</p>
+<p>Independence: UI and daemon can be built, deployed, and updated separately.</p>
 
-What’s inside
+<h3>What’s inside</h3>
+<code>
 cm4-control/
 ├─ package.json                 # npm workspaces
 ├─ Makefile                     # handy top-level commands
@@ -29,30 +30,30 @@ cm4-control/
       ├─ preload.js             # (optional) IPC bridge
       ├─ public/index.html      # simple UI (or React/Vite later)
       └─ README.md
-
+</code>
 </hr>
 
-# Protocol (1-liner)
-<code> FF 00 00 00 03 | DEST | LEN | PAYLOAD | CHECKSUM</code>, where:
-<code> CHECKSUM = (256 - ((DEST + LEN + sum(PAYLOAD)) % 256)) % 256. </code>
+<h3>Protocol (1-liner)</h3>
+<p><code> FF 00 00 00 03 | DEST | LEN | PAYLOAD | CHECKSUM</code>, where:</p>
+<p><code> CHECKSUM = (256 - ((DEST + LEN + sum(PAYLOAD)) % 256)) % 256. </code></p>
 
 Daemon sends perif 2/3/10/11 buffers every 100 ms; parses replies; exposes minimal WS API.
 
 </hr>
 
 <h3>Quick start (dev)</h3>
-Clone + install
+<p>Clone + install</p>
 <code>npm i</code>
-Run daemon (serial + ws://localhost:8081)
+<p>Run daemon (serial + ws://localhost:8081)</p>
 <code>npm run dev:daemon</code>
-Run UI (Electron)
+<p>Run UI (Electron)</p>
 <code>npm run dev:ui</code>
 
 <h3>Makefile (top-level)</h3>
 <code>
 dev-daemon:        # run daemon locally
 	@npm --workspace packages/daemon run dev
-
+    
 dev-ui:            # run electron UI
 	@npm --workspace packages/ui-electron start
 
