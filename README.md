@@ -4,13 +4,15 @@
 <p><strong>Design: </strong>Split into a Node daemon (owns the serial bus) and a UI app (Electron/React) that talks to the daemon via WebSocket.</p>
 
 <h3>What’s inside</h3>
-Inside the project monorepo we have:
-   - packages folder -> contains the client and the server needed for the whole app to function.
-      - daemon -> contains the node daemon server, responsible for the communication with the RS485 board
-      - ui-electron -> top level of the UI. It runs the client app with electron
+<p>Inside the project monorepo we have:</p>
+
+- packages folder -> contains the client and the server needed for the whole app to function.
+   - daemon -> contains the node daemon server, responsible for the communication with the RS485 board
+   - ui-electron -> top level of the UI. It runs the client app with electron
          - serialcontrol-ui -> Actual React+Vite client application. Can run on it's own for dev purposes.
    - ops -> systemd unit (daemon)
       - cm4-serial-control.service -> runs the Node server as a Daemon on the Raspberry Pi.
+
 </hr>
 
 So, client React+Vite is in serialcontrol-ui. We build and serve the client via Electron in ui-electron, and the client communicates with the Node daemon via WebSocket. 
@@ -32,7 +34,7 @@ So, client React+Vite is in serialcontrol-ui. We build and serve the client via 
 </p>
 <p>
    <p>Run UI (Electron)</p>
-   <code>client-start</code>
+   <code>make client-start</code>
 </p>
 
 # Deploy daemon as a service (Pi CM4)
