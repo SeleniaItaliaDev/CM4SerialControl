@@ -3,64 +3,37 @@
 <p><strong>Goal: </strong>Reliable control of an RS-485 board from a Raspberry Pi CM4.</p>
 <p><strong>Design: </strong>Split into a Node daemon (owns the serial bus) and a UI app (Electron/React) that talks to the daemon via WebSocket.</p>
 
-<h4>Why this split?</h4>
+<h3>What’s inside</h3>
+Inside the project monorepo we have:
+   - packages folder -> contains the client and the server needed for the whole app to function.
+      - daemon -> contains the node daemon server, responsible for the communication with the RS485 board
+      - ui-electron -> top level of the UI. It runs the client app with electron
+         - serialcontrol-ui -> Actual React+Vite client application. Can run on it's own for dev purposes.
+   - ops -> systemd unit (daemon)
+      - cm4-serial-control.service -> runs the Node server as a Daemon on the Raspberry Pi.
+</hr>
 
+So, client React+Vite is in serialcontrol-ui. We build and serve the client via Electron in ui-electron, and the client communicates with the Node daemon via WebSocket. 
+
+<h4>Why this split?</h4>
 <p>Stability: serialport in plain Node avoids Electron ABI rebuild hell on ARM.</p>
 <p>Resilience: Daemon runs as a systemd service (auto-start, auto-restart, logs).</p>
 <p>Independence: UI and daemon can be built, deployed, and updated separately.</p>
-
-<h3>What’s inside</h3>
-<code>
-cm4-serial-control/
-├─ package.json                 # npm workspaces
-├─ Makefile                     # handy top-level commands
-├─ README.md                    # (this file)
-├─ ops/
-│  ├─ cm4-serial-control.service        # systemd unit (daemon)
-│  └─ install-daemon.sh         # optional helper
-└─ packages/
-   ├─ daemon/                   # Node + serialport + WS server
-   │  ├─ src/
-   │  │  ├─ index.js            # TX loop (100ms), RX parser, WS API
-   │  │  ├─ packet.js           # frame builder (FF 00 00 00 03 …)
-   │  │  └─ buffers/            # perif2/3/10/11 state → payload
-   │  └─ README.md
-   └─ ui-electron/              # Electron (kiosk) UI, talks WS -> localhost:8081
-      ├─ main.js                # fullscreen/kiosk window
-      ├─ preload.js             # (optional) IPC bridge
-      ├─ public/index.html      # simple UI (or React/Vite later)
-      └─ README.md
-</code>
-</hr>
-
-<h3>Protocol (1-liner)</h3>
-<p><code> FF 00 00 00 03 | DEST | LEN | PAYLOAD | CHECKSUM</code>, where:</p>
-<p><code> CHECKSUM = (256 - ((DEST + LEN + sum(PAYLOAD)) % 256)) % 256. </code></p>
-
-Daemon sends perif 2/3/10/11 buffers every 100 ms; parses replies; exposes minimal WS API.
-
 </hr>
 
 # Quick start (dev)
-<p>Clone + install</p>
-<code>npm i</code>
-<p>Run daemon (serial + ws://localhost:8081)</p>
-<code>npm run dev:daemon</code>
-<p>Run UI (Electron)</p>
-<code>npm run dev:ui</code>
-
-<h3>Makefile (top-level)</h3>
-<code>
-dev-daemon:        # run daemon locally
-	@npm --workspace packages/daemon run dev
-
-dev-ui:            # run electron UI
-	@npm --workspace packages/ui-electron start
-
-build-ui:          # package electron app
-	@npm --workspace packages/ui-electron run dist
-</code>
-</hr>
+<p>
+   <p>Clone + install</p>
+   <code>make setup-all</code>
+</p>
+<p>
+   <p>Run daemon</p>
+   <code>make server-start</code>
+</p>
+<p>
+   <p>Run UI (Electron)</p>
+   <code>client-start</code>
+</p>
 
 # Deploy daemon as a service (Pi CM4)
 <p><strong>Prerequisites:</strong></p>
@@ -94,6 +67,10 @@ ExecStart=/usr/bin/node /opt/cm4-serial-control/packages/daemon/src/index.js
 
 Build on the Pi (simplest for ARM) via:
 <code>npm run build:ui</code>
+
+# Protocol (1-liner)
+<p><code> FF 00 00 00 03 | DEST | LEN | PAYLOAD | CHECKSUM</code>, where:</p>
+<p><code> CHECKSUM = (256 - ((DEST + LEN + sum(PAYLOAD)) % 256)) % 256. </code></p>
 
 # WS contract (minimal)
 
