@@ -3,7 +3,8 @@ CLIENT_DIR=packages/ui-electron
 RENDERER_DIR=$(CLIENT_DIR)/serialcontrol-ui
 SERVER_DIR=packages/daemon
 
-.PHONY: setup-all client-install server-install client-start server-start client-build
+# PHONY is used to declare targets that are not files to avoid conflicts.
+.PHONY: setup-all client-install server-install clean client-build client-start-dev server-start client-start-prod
 
 # ----- Setup -----
 setup-all: client-install server-install
@@ -15,21 +16,23 @@ client-install:
 server-install:
 	cd $(SERVER_DIR) && npm install
 
-# ----- Dev run (use two terminals) -----
-client-start:
-	cd $(CLIENT_DIR) && LIBGL_ALWAYS_SOFTWARE=1 NODE_ENV=development npm run start:dev
-
-server-start:
-	cd $(SERVER_DIR) && node src/index.js
+# ----- Clean artifacts -----
+clean:
+	cd $(CLIENT_DIR) && make clean
 
 # ----- Build UI for production -----
 client-build:
 	cd $(RENDERER_DIR) && npm run lint && npm run build
 
+# ----- Run Client in development mode -----
+client-start-dev:
+	cd $(CLIENT_DIR) && npm run start:dev
+
+# ----- Run Server in development mode -----
+server-start:
+	cd $(SERVER_DIR) && node src/index.js
+
 # ----- Run Client production build -----
-client-prod-start:
+client-start-prod:
 	cd $(CLIENT_DIR) && npm run start:prod
 
-# ----- Clean artifacts -----
-clean:
-	cd $(CLIENT_DIR) && make clean

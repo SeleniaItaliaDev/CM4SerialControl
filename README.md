@@ -34,7 +34,7 @@ So, client React+Vite is in serialcontrol-ui. We build and serve the client via 
 </p>
 <p>
    <p>Run UI (Electron)</p>
-   <code>make client-start</code>
+   <code>make client-start-dev</code>
 </p>
 
 # Deploy daemon as a service (Pi CM4)
