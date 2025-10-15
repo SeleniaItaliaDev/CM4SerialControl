@@ -8,6 +8,8 @@ function createWindow() {
     width: 1024,
     height: 600,
     resizable: false,
+    kiosk: isDev ? false : true, // kiosk mode in production
+    autoHideMenuBar: true,
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
@@ -17,11 +19,12 @@ function createWindow() {
   if (isDev) {
     win.loadURL('http://localhost:5173'); // Vite dev server
   } else {
-    win.loadFile(path.join(__dirname, 'serialcontrol-ui/dist/index.html')); // Production build
+    win.loadFile(path.join(__dirname, 'serialcontrol-ui', 'dist', 'index.html'));
   }
-
+  
   // Hide pointer if you want:
   // win.webContents.on('dom-ready', () => win.webContents.insertCSS('html,body{cursor:none !important;}'));
+  win.webContents.openDevTools();
 }
 
 app.commandLine.appendSwitch('disable-gpu');

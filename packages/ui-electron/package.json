@@ -7,9 +7,10 @@
     "OLD-start": "concurrently \"npm run dev --prefix serialcontrol-ui\" \"npm run electron\"",
     
     "electron": "electron main.js",
-    "start": "NODE_ENV=development npx concurrently \"npm run dev --prefix serialcontrol-ui\" \"npm run electron\"",
     "build-renderer": "npm run build --prefix serialcontrol-ui",
-    "start:prod": "NODE_ENV=production electron main.js"
+    
+    "start:dev": "NODE_ENV=development npx concurrently \"npm run dev --prefix serialcontrol-ui\" \"npm run electron\"",
+    "start:prod": "NODE_ENV=production LIBGL_ALWAYS_SOFTWARE=1 electron main.js"
   },
   "keywords": [],
   "author": "",

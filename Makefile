@@ -1,43 +1,35 @@
-# Path shortcuts
+# Paths
 CLIENT_DIR=packages/ui-electron
+RENDERER_DIR=$(CLIENT_DIR)/serialcontrol-ui
 SERVER_DIR=packages/daemon
 
-# ----- Electron & native dependencies (for Pi) -----
-.PHONY: client-install-pi
-client-install-pi:
-	cd $(CLIENT_DIR) && npm install electron --arch=armv7l --platform=linux
-	cd $(CLIENT_DIR) && npm install
-	cd $(CLIENT_DIR) && npx electron-rebuild
+.PHONY: setup-all client-install server-install client-start server-start client-build
 
-# ----- Client commands -----
+# ----- Setup -----
+setup-all: client-install server-install
 
-.PHONY: client-install
 client-install:
 	cd $(CLIENT_DIR) && npm install
+	cd $(RENDERER_DIR) && npm install
 
-.PHONY: client-start
-client-start:
-	cd $(CLIENT_DIR) && LIBGL_ALWAYS_SOFTWARE=1 npm start
-
-
-.PHONY: client-rebuild
-client-rebuild:
-	cd $(CLIENT_DIR) && npx electron-rebuild
-
-# ----- Server commands -----
-
-.PHONY: server-install
 server-install:
 	cd $(SERVER_DIR) && npm install
 
-.PHONY: server-start
+# ----- Dev run (use two terminals) -----
+client-start:
+	cd $(CLIENT_DIR) && LIBGL_ALWAYS_SOFTWARE=1 NODE_ENV=development npm run start:dev
+
 server-start:
 	cd $(SERVER_DIR) && node src/index.js
 
-# ----- Full setup -----
+# ----- Build UI for production -----
+client-build:
+	cd $(RENDERER_DIR) && npm run lint && npm run build
 
-.PHONY: setup-all
-setup-all: client-install server-install
+# ----- Run Client production build -----
+client-prod-start:
+	cd $(CLIENT_DIR) && npm run start:prod
 
-.PHONY: start-all
-start-all: client-start server-start
+# ----- Clean artifacts -----
+clean:
+	cd $(CLIENT_DIR) && make clean

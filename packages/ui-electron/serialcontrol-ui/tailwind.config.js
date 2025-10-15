@@ -1,4 +1,6 @@
 /** @type {import('tailwindcss').Config} */
+// need to import with import instead of require for ESM
+
 export default {
     content: [
         "./index.html",
@@ -7,5 +9,5 @@ export default {
     theme: {
         extend: {},
     },
-    plugins: [require("tailwindcss-animate")],
+    plugins: [import("tailwindcss-animate")],
 }

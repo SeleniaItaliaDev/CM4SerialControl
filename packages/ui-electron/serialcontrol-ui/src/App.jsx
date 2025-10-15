@@ -1,6 +1,6 @@
 import { Toaster, toast } from 'sonner';
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, HashRouter } from "react-router-dom";
 import Home from './pages/Home';
 
 export default function App() {
@@ -25,13 +25,12 @@ export default function App() {
     connect();
   }, []);
 
-
   return (
-    <BrowserRouter>
+    <HashRouter>
       <Toaster position='top-center' toastOptions={{ classNames: { error: 'red-border', success: 'green-border' } }} theme='dark' />
       <Routes>
-        <Route path="/" element={<Home ws={ws} connected={connected}/>} />
+        <Route path="/" element={<Home ws={ws} connected={connected} />} />
       </Routes>
-    </BrowserRouter>
+    </HashRouter>
   );
 }
