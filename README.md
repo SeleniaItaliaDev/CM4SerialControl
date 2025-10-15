@@ -9,7 +9,7 @@
 - packages folder -> contains the client and the server needed for the whole app to function.
    - daemon -> contains the node daemon server, responsible for the communication with the RS485 board
    - ui-electron -> top level of the UI. It runs the client app with electron
-         - serialcontrol-ui -> Actual React+Vite client application. Can run on it's own for dev purposes.
+      - serialcontrol-ui -> Actual React+Vite client application. Can run on it's own for dev purposes.
    - ops -> systemd unit (daemon)
       - cm4-serial-control.service -> runs the Node server as a Daemon on the Raspberry Pi.
 
