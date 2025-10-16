@@ -13,5 +13,8 @@
     "serialport": "^13.0.0",
     "ws": "^8.18.1"
   },
-  "description": ""
+  "description": "",
+  "devDependencies": {
+    "@types/ws": "^8.18.1"
+  }
 }

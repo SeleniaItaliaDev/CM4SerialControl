@@ -1,101 +1,38 @@
-// server/src/index.js
-const WebSocket = require('ws');
-const { SerialPort } = require('serialport');
-const buildPacket = require('./packet');
-const perif2 = require('./buffers/perif2');
-const perif3 = require('./buffers/perif3');
-const perif10 = require('./buffers/perif10');
-const perif11 = require('./buffers/perif11');
+import { SerialPort } from 'serialport';
+import WebSocket, { WebSocketServer } from 'ws';
+import { startTxLoop } from './tx_loop.js';
+import { attachRx } from './rx.js';
 
-// === CONFIG ===
-const SERIAL_PATH = '/dev/ttyAMA2';
-const BAUD_RATE = 115200;
-const WS_PORT = 8081;
+const txState = { mode: 0, speed: 0, direction: 0, duration: 0 };
+const rxState = { last: null, lastSeenAt: 0 };
 
-let lastClient = null;
+const port = new SerialPort({ path: process.env.SERIAL_PATH || '/dev/ttyAMA2', baudRate: 115200 });
+port.on('open', () => console.log('✅ serial open'));
+port.on('error', e => console.error('serial error', e));
 
-// === SERIAL SETUP ===
-const port = new SerialPort({ path: SERIAL_PATH, baudRate: BAUD_RATE });
-port.on('open', () => {
-  console.log(`Serial port ${SERIAL_PATH} opened at ${BAUD_RATE} baud`);
-});
+const wss = new WebSocketServer({ port: 8081 }, () => console.log('✅ WS ws://localhost:8081'));
+const broadcast = (obj) => {
+  const s = JSON.stringify(obj);
+  for (const c of wss.clients) if (c.readyState === WebSocket.OPEN) c.send(s);
+};
 
-// === INCOMING BUFFER PARSER ===
-let rxBuffer = Buffer.alloc(0);
-
-port.on('data', chunk => {
-  rxBuffer = Buffer.concat([rxBuffer, chunk]);
-
-  while (rxBuffer.length >= 6) {
-    const start = rxBuffer.indexOf(Buffer.from([0xFF, 0x00, 0x00, 0x00, 0x03]));
-    if (start === -1 || rxBuffer.length < start + 6) break;
-
-    const offset = start + 5;
-    const perifId = rxBuffer[offset];
-    const length = rxBuffer[offset + 1];
-    const totalLength = 5 + 1 + 1 + length + 1;
-
-    if (rxBuffer.length < start + totalLength) break;
-
-    const packet = rxBuffer.slice(start, start + totalLength);
-    const payload = packet.slice(7, 7 + length);
-    const receivedChecksum = packet[7 + length];
-    const checksum = (perifId + length + payload.reduce((a, b) => a + b, 0)) % 256;
-    const expectedChecksum = (256 - checksum) % 256;
-
-    if (receivedChecksum === expectedChecksum) {
-    console.log(`RX from perif ${perifId}:`, payload.toString('hex'));
-
-      if (lastClient) {
-        lastClient.send(JSON.stringify({
-          from: perifId,
-          payload: Array.from(payload)
-        }));
-      }
-    } else {
-      console.warn('Invalid checksum');
-    }
-
-    rxBuffer = rxBuffer.slice(start + totalLength);
-  }
-});
-
-function sendBuffer(peripheral, payload) {
-  const packet = buildPacket(peripheral, payload);
-  port.write(packet, err => {
-    if (err) return console.error('❌ Serial error:', err);
-    console.log(`Sent to perif ${peripheral}:`, packet.toString('hex'));
-  });
-}
-
-// === WS SERVER ===
-const wss = new WebSocket.Server({ port: WS_PORT }, () => {
-  console.log(`WebSocket server started on ws://localhost:${WS_PORT}`);
-});
-
-wss.on('connection', ws => {
-  console.log('Client connected');
-  lastClient = ws;
-
-  ws.on('message', msg => {
+wss.on('connection', (ws) => {
+  ws.send(JSON.stringify({ event: 'hello', perif: 33, tx: txState, rx: rxState }));
+  ws.on('message', (raw) => {
     try {
-      const data = JSON.parse(msg);
-      if (data.cmd === 'setLed') {
-        if (data.peripheral === 10) perif10.state.ledValue = data.value;
-        if (data.peripheral === 11) perif11.state.ledValue = data.value;
-      } else {
-        console.warn('Unknown command:', data);
+      const msg = JSON.parse(raw);
+      if (msg.cmd === 'set33') {
+        if (Number.isInteger(msg.mode)) txState.mode = msg.mode & 0xFF;
+        if (Number.isInteger(msg.speed)) txState.speed = msg.speed & 0xFF;
+        if (Number.isInteger(msg.direction)) txState.direction = msg.direction & 0xFF;
+        if (Number.isInteger(msg.duration)) txState.duration = msg.duration & 0xFF;
+        ws.send(JSON.stringify({ event: 'ack', cmd: 'set33', ok: true, tx: txState }));
       }
-    } catch (err) {
-      console.error('JSON error:', err);
+    } catch (e) {
+      ws.send(JSON.stringify({ event: 'error', message: e.message }));
     }
   });
 });
 
-// === TRANSMISSION INTERVAL ===
-setInterval(() => {
-    // sendBuffer(2, perif2.build(perif2.state));
-    // sendBuffer(3, perif3.build(perif3.state));
-    sendBuffer(10, perif10.build(perif10.state));
-    // sendBuffer(11, perif11.build(perif11.state));
-}, 100);
+attachRx(port, rxState, broadcast);
+startTxLoop(port, txState, 100);
