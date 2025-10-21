@@ -6,7 +6,7 @@ import '../../App.css'
 
 export default function VoltagePanel({ onVoltageChange }) {
     const [voltage, setVoltage] = useState(80); // default to 80V
-    const MAX_VOLTAGE = 200;
+    const MAX_VOLTAGE = 150;
     const MIN_VOLTAGE = 50;
 
     const increaseVoltage = () => {
@@ -49,8 +49,8 @@ export default function VoltagePanel({ onVoltageChange }) {
             </div>
 
             <span className='w-full flex justify-between text-xs px-1'>
-                <p> Min: 50 </p>
-                <p> Max: 150 </p>
+                <p> Min: {MIN_VOLTAGE} </p>
+                <p> Max: {MAX_VOLTAGE} </p>
             </span>
         </div>
 

@@ -25,7 +25,7 @@
 const CENTRAL_ID = 128;
 const CMD = 't'.charCodeAt(0); // 't' char code is 116
 
-type Perif33State = {
+export type Perif33StateType = {
     mode: 'off' | 'cont' | 'pulse' | 'pwm'; // off, cont, pulse, pwm
     freq: 40 | 400;   // 40 or 400 (kHz)
     volt: number;     // 0-255
@@ -33,7 +33,7 @@ type Perif33State = {
     pwm: number;      // 0-255 (only for 400kHz mode)
 };
 
-export const state = {
+export const state: Perif33StateType = {
     mode: 'off',    // off, cont, pulse, pwm
     freq: 400,      // 40 or 400 (kHz)
     volt: 0,        // 0-255
@@ -46,7 +46,7 @@ export const state = {
  * @param state Current state
  * @returns Array of bytes to send
  */
-export function build(state: Perif33State): number[] {
+export function build(): number[] {
     let out = 0;
 
     if (state.mode === 'off') {

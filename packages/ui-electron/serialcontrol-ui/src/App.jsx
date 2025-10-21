@@ -8,15 +8,30 @@ export default function App() {
   const [ws, setWs] = useState(null);
   const [connected, setConnected] = useState(false);
   const reconnectTimeoutRef = useRef(null);
+  const [txState, setTxState] = useState(null);
 
   const initWebSocket = () => {
     const socket = connectWS(setWs, setConnected, toast);
 
+    // When a message is received, parse it and handle accordingly
+    socket.onmessage = (event) => {
+      try {
+        const msg = JSON.parse(event.data);
+        switch (msg.event) {
+          case 'emitState':
+            if (msg.tx) {
+              setTxState(JSON.stringify(msg.tx));
+            }
+            break;
+        }
+      } catch (e) {
+        console.error('Error parsing WebSocket message:', e);
+      }
+    };
+
     // When it closes, schedule a reconnect
     socket.onclose = () => {
       setConnected(false);
-      // toast.warning('WebSocket disconnected — retrying in 1s...');
-
       reconnectTimeoutRef.current = setTimeout(() => {
         initWebSocket();
       }, 1000);
@@ -43,7 +58,7 @@ export default function App() {
         richColors
       />
       <Routes>
-        <Route path="/" element={<Home ws={ws} connected={connected} />} />
+        <Route path="/" element={<Home ws={ws} connected={connected} currentTxState={txState}/>} />
       </Routes>
     </HashRouter>
   );

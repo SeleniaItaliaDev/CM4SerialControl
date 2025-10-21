@@ -1,41 +1,41 @@
+import { sendUpdateVoltage, sendUpdatedFrequency, sendStartTreatment, sendStopTreatment } from '@/api/apiService';
 import FrequencyPanel from '@/components/functional/FrequencyPanel';
 import VoltagePanel from '@/components/functional/VoltagePanel';
-import { COMMAND_TYPES } from '../../../../../shared/messageTypes';
-import { Separator } from "@/components/ui/separator"
+import { Separator } from "@/components/ui/separator";
 import { Button } from '@/components/ui/button';
-import { sendCommand } from '@/api/apiService';
 import { Info } from 'lucide-react';
 import { useState } from 'react';
 import { toast } from 'sonner';
 import '../styles/Home.css';
 import '../App.css';
 
-export default function Home({ ws, connected }) {
+export default function Home({ ws, connected, currentTxState }) {
   const [started, setStarted] = useState(false);
 
   const startTreatment = () => {
     setStarted(true);
-    sendCommand(ws, COMMAND_TYPES.START_TREATMENT);
+    sendStartTreatment(ws);
     toast.success('Trattamento avviato');
   }
 
   const stopTreatment = () => {
     setStarted(false);
-    sendCommand(ws, COMMAND_TYPES.STOP_TREATMENT);
+    sendStopTreatment(ws);
     toast.warning('Trattamento fermato');
   }
 
   const changeFrequency = (frequency) => {
-    sendCommand(ws, `${COMMAND_TYPES.SET_FREQUENCY}:${frequency}`);
+    sendUpdatedFrequency(ws, frequency);
   }
 
   const changeVoltage = (voltage) => {
-    sendCommand(ws, `${COMMAND_TYPES.SET_VOLTAGE}:${voltage}`);
+    sendUpdateVoltage(ws, voltage);
   }
 
   return (
     <div className="flex flex-col align-center items-center justify-center h-screen w-screen gap-4 homeContainer">
       {!connected && <p className="ws-error">WebSocket Disconnected</p>}
+      {currentTxState && <p className="tx-state">{currentTxState}</p>}
       <h1>Selenia - Teslamed</h1>
 
       <Separator className="my-4 w-3/4" />

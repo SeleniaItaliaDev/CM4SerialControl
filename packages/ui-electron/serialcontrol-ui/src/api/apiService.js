@@ -1,3 +1,4 @@
+import { COMMAND_TYPES } from '../../../../../shared/messageTypes';
 /**
  * Connect to WebSocket server
  * @param {*} setWs The state setter for WebSocket instance
@@ -30,10 +31,40 @@ export const connectWS = (setWs, setConnected, toast) => {
  * @param {WebSocket} ws The WebSocket instance
  * @param {string} command The command to send
  */
-export const sendCommand = (ws, command) => {
+const sendCommand = (ws, command) => {
     if (ws && ws.readyState === WebSocket.OPEN) {
         ws.send(command);
     } else {
         console.error('WebSocket is not connected.');
     }
-} 
+}
+
+export const sendUpdateVoltage = (ws, voltage) => {
+    const msg = {
+        cmd: COMMAND_TYPES.SET_VOLTAGE,
+        voltage: voltage
+    };
+    sendCommand(ws, JSON.stringify(msg));
+}
+
+export const sendUpdatedFrequency = (ws, frequency) => {
+    const msg = {
+        cmd: COMMAND_TYPES.SET_FREQUENCY,
+        frequency: frequency
+    };
+    sendCommand(ws, JSON.stringify(msg));
+}
+
+export const sendStartTreatment = (ws) => {
+    const msg = {
+        cmd: COMMAND_TYPES.START_TREATMENT
+    };
+    sendCommand(ws, JSON.stringify(msg));
+}
+
+export const sendStopTreatment = (ws) => {
+    const msg = {
+        cmd: COMMAND_TYPES.STOP_TREATMENT
+    };
+    sendCommand(ws, JSON.stringify(msg));
+}

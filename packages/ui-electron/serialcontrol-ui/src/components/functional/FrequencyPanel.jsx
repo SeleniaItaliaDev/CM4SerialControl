@@ -3,8 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Switch } from '../ui/switch';
 
 const FREQUENCY_MODE = {
-    '400KHz': 1,
-    '40KHz': 2
+    '400KHz': 400,
+    '40KHz': 40
 }
 
 export default function FrequencyPanel( {onFrequencyChange} ) {
