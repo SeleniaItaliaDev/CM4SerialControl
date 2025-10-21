@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '../ui/button';
 import { Plus, Minus } from 'lucide-react';
 import '../../App.css'
 
 
-export default function VoltagePanel() {
+export default function VoltagePanel({ onVoltageChange }) {
     const [voltage, setVoltage] = useState(80); // default to 80V
     const MAX_VOLTAGE = 200;
     const MIN_VOLTAGE = 50;
@@ -21,18 +21,9 @@ export default function VoltagePanel() {
         setVoltage(newVoltage);
     }
 
-    const clickedButton = (e) => {
-        e.preventDefault();
-        const id = e.currentTarget.id;
-        console.log('Clicked button id:', id);
-        document.getElementById(id).classList.add('clicked');
-    }
-
-    const unclickedButton = (e) => {
-        e.preventDefault();
-        const id = e.currentTarget.id;
-        document.getElementById(id).classList.remove('clicked');
-    }
+    useEffect(() => {
+        onVoltageChange(voltage);
+    }, [voltage]);
 
     return (
         <div className='flex flex-col gap-2 align-center items-center justify-center w-1/4'>
@@ -44,9 +35,7 @@ export default function VoltagePanel() {
             <div className="flex gap-4 items-center w-full justify-between">
                 <Button
                     size='icon'
-                    onClick={decreaseVoltage}
-                    onMouseDown={clickedButton}
-                    onMouseUp={unclickedButton}>
+                    onClick={decreaseVoltage}>
                     <Minus size={16} />
                 </Button>
 
@@ -54,9 +43,7 @@ export default function VoltagePanel() {
 
                 <Button
                     size='icon'
-                    onClick={increaseVoltage}
-                    onMouseDown={clickedButton}
-                    onMouseUp={unclickedButton}>
+                    onClick={increaseVoltage}>
                     <Plus size={16} />
                 </Button>
             </div>

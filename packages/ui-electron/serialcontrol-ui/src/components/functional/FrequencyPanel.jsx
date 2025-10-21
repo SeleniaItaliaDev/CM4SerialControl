@@ -1,5 +1,5 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Switch } from '../ui/switch';
 
 const FREQUENCY_MODE = {
@@ -7,7 +7,7 @@ const FREQUENCY_MODE = {
     '40KHz': 2
 }
 
-export default function FrequencyPanel() {
+export default function FrequencyPanel( {onFrequencyChange} ) {
     const [frequencyMode, setFrequencyMode] = useState(FREQUENCY_MODE['400KHz']);
     const [checked, setChecked] = useState(false); // false means 400KHz, true means 40KHz
 
@@ -17,8 +17,11 @@ export default function FrequencyPanel() {
         setChecked(newChecked);
 
         setFrequencyMode(newChecked ? FREQUENCY_MODE['40KHz'] : FREQUENCY_MODE['400KHz']);
-        // Here you would typically also notify the backend or perform some action based on the new frequency mode
     }
+
+    useEffect(() => {
+        onFrequencyChange(frequencyMode);
+    }, [frequencyMode]);
 
     return (
 

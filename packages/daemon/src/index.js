@@ -2,7 +2,7 @@ import { SerialPort } from 'serialport';
 import WebSocket, { WebSocketServer } from 'ws';
 import { startTxLoop } from './tx_loop.js';
 import { attachRx } from './rx.js';
-import { Perif33 } from './buffers/perif33.js';
+import { Perif33 } from './buffers/perif33.ts';
 
 const rxState = { last: null, lastSeenAt: 0 };
 const txState = Perif33.state;
@@ -18,8 +18,11 @@ const broadcast = (obj) => {
 };
 
 wss.on('connection', (ws) => {
+  console.log('✅ WS client connected');
   ws.send(JSON.stringify({ event: 'hello', perif: 33, tx: txState, rx: rxState }));
+
   ws.on('message', (raw) => {
+    console.log('⬅️', raw.toString());
     try {
       const msg = JSON.parse(raw);
       if (msg.cmd === 'set33') {

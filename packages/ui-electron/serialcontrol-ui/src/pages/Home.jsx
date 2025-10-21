@@ -10,19 +10,27 @@ import { toast } from 'sonner';
 import '../styles/Home.css';
 import '../App.css';
 
-export default function Home({ connected }) {
+export default function Home({ ws, connected }) {
   const [started, setStarted] = useState(false);
 
   const startTreatment = () => {
     setStarted(true);
-    sendCommand(COMMAND_TYPES.START_TREATMENT);
+    sendCommand(ws, COMMAND_TYPES.START_TREATMENT);
     toast.success('Trattamento avviato');
   }
 
   const stopTreatment = () => {
     setStarted(false);
-    sendCommand(COMMAND_TYPES.STOP_TREATMENT);
+    sendCommand(ws, COMMAND_TYPES.STOP_TREATMENT);
     toast.warning('Trattamento fermato');
+  }
+
+  const changeFrequency = (frequency) => {
+    sendCommand(ws, `${COMMAND_TYPES.SET_FREQUENCY}:${frequency}`);
+  }
+
+  const changeVoltage = (voltage) => {
+    sendCommand(ws, `${COMMAND_TYPES.SET_VOLTAGE}:${voltage}`);
   }
 
   return (
@@ -33,8 +41,8 @@ export default function Home({ connected }) {
       <Separator className="my-4 w-3/4" />
 
       <div id='controls' className='flex align-center items-center justify-evenly w-full'>
-        <FrequencyPanel />
-        <VoltagePanel />
+        <FrequencyPanel onFrequencyChange={changeFrequency} />
+        <VoltagePanel onVoltageChange={changeVoltage} />
       </div>
 
       <Separator className="my-4 w-3/4" />

@@ -6,7 +6,7 @@
  * @returns {WebSocket} socket
  */
 export const connectWS = (setWs, setConnected, toast) => {
-    const socket = new WebSocket('ws://localhost:8765'); 
+    const socket = new WebSocket('ws://localhost:8081'); 
     socket.onopen = () => {
         setWs(socket);
         setConnected(true);
@@ -20,7 +20,7 @@ export const connectWS = (setWs, setConnected, toast) => {
     
     socket.onerror = (error) => {
         setConnected(false);
-        toast.error('WebSocket error: ' + error.message);
+        // toast.error('WebSocket error: ' + error.message);
     };
     return socket;
 }
@@ -36,4 +36,4 @@ export const sendCommand = (ws, command) => {
     } else {
         console.error('WebSocket is not connected.');
     }
-}
+} 
