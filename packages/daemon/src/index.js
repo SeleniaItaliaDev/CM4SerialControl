@@ -2,9 +2,10 @@ import { SerialPort } from 'serialport';
 import WebSocket, { WebSocketServer } from 'ws';
 import { startTxLoop } from './tx_loop.js';
 import { attachRx } from './rx.js';
+import { Perif33 } from './buffers/perif33.js';
 
-const txState = { mode: 0, speed: 0, direction: 0, duration: 0 };
 const rxState = { last: null, lastSeenAt: 0 };
+const txState = Perif33.state;
 
 const port = new SerialPort({ path: process.env.SERIAL_PATH || '/dev/ttyAMA2', baudRate: 115200 });
 port.on('open', () => console.log('✅ serial open'));

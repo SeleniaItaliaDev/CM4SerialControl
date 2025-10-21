@@ -1,33 +1,30 @@
-import { Toaster, toast } from 'sonner';
+import { Routes, Route, HashRouter } from "react-router-dom";
+import { connectWS } from './api/apiService';
 import { useState, useEffect } from 'react';
-import { BrowserRouter, Routes, Route, HashRouter } from "react-router-dom";
+import { Toaster, toast } from 'sonner';
 import Home from './pages/Home';
 
 export default function App() {
   const [ws, setWs] = useState(null);
   const [connected, setConnected] = useState(false);
 
-  const connect = () => {
-    const socket = new WebSocket('ws://localhost:8081');
-    socket.onopen = () => toast.success('WebSocket connection established');
-    socket.onmessage = (event) => toast.success(`Message from server: ${event.data}`);
-    socket.onerror = (err) => toast.error(`WebSocket error: ${err.message}`);
-    setWs(socket);
-
-    if (!ws || ws.readyState !== WebSocket.OPEN) {
-      setConnected(false);
-    } else {
-      setConnected(true);
-    }
-  };
-
   useEffect(() => {
-    connect();
+    const socket = connectWS(setWs, setConnected, toast);
+
+    return () => {
+      if (socket) {
+        socket.close();
+      }
+    };
   }, []);
 
   return (
     <HashRouter>
-      <Toaster position='top-center' toastOptions={{ classNames: { error: 'red-border', success: 'green-border' } }} theme='dark' />
+      <Toaster
+        position="top-center"
+        theme="dark"
+        richColors
+      />
       <Routes>
         <Route path="/" element={<Home ws={ws} connected={connected} />} />
       </Routes>

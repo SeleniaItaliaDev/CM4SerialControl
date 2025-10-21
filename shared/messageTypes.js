@@ -1,1 +1,8 @@
-// Shared message definitions will go here
+// Shared definitions will go here
+
+export const COMMAND_TYPES = {
+    START_TREATMENT: 'START_TREATMENT',
+    STOP_TREATMENT: 'STOP_TREATMENT',
+    SET_FREQUENCY: 'SET_FREQUENCY',
+    SET_VOLTAGE: 'SET_VOLTAGE',
+};

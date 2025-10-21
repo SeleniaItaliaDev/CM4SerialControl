@@ -1,28 +1,66 @@
 import React, { useState } from 'react';
-import { Slider } from '../ui/slider';
+import { Button } from '../ui/button';
+import { Plus, Minus } from 'lucide-react';
+import '../../App.css'
 
 
 export default function VoltagePanel() {
     const [voltage, setVoltage] = useState(80); // default to 80V
+    const MAX_VOLTAGE = 200;
+    const MIN_VOLTAGE = 50;
 
-    const handleVoltageChange = (newVoltage) => {
+    const increaseVoltage = () => {
+        let newVoltage = voltage;
+        newVoltage += (voltage >= MAX_VOLTAGE) ? 0 : 5;
         setVoltage(newVoltage);
-        // Here you would typically also notify the backend or perform some action based on the new voltage
+    }
+
+    const decreaseVoltage = () => {
+        let newVoltage = voltage;
+        newVoltage -= (voltage <= MIN_VOLTAGE) ? 0 : 5;
+        setVoltage(newVoltage);
+    }
+
+    const clickedButton = (e) => {
+        e.preventDefault();
+        const id = e.currentTarget.id;
+        console.log('Clicked button id:', id);
+        document.getElementById(id).classList.add('clicked');
+    }
+
+    const unclickedButton = (e) => {
+        e.preventDefault();
+        const id = e.currentTarget.id;
+        document.getElementById(id).classList.remove('clicked');
     }
 
     return (
-        <div className='flex flex-col gap-2 align-center items-center justify-center w-1/3'>
+        <div className='flex flex-col gap-2 align-center items-center justify-center w-1/4'>
+
             <div className="flex items-center justify-between gap-1">
-                <p htmlFor="voltage" className='font-medium'>Voltage: </p>
-                <span className="text-md">{voltage} V</span>
+                <p htmlFor="voltage" className='font-medium'>Voltage</p>
             </div>
-            <Slider
-                defaultValue={[voltage]}
-                max={150}
-                min={50}
-                step={1}
-                onValueChange={(value) => handleVoltageChange(value[0])}
-            />
+
+            <div className="flex gap-4 items-center w-full justify-between">
+                <Button
+                    size='icon'
+                    onClick={decreaseVoltage}
+                    onMouseDown={clickedButton}
+                    onMouseUp={unclickedButton}>
+                    <Minus size={16} />
+                </Button>
+
+                <p className='text-lg'>{voltage}</p>
+
+                <Button
+                    size='icon'
+                    onClick={increaseVoltage}
+                    onMouseDown={clickedButton}
+                    onMouseUp={unclickedButton}>
+                    <Plus size={16} />
+                </Button>
+            </div>
+
             <span className='w-full flex justify-between text-xs px-1'>
                 <p> Min: 50 </p>
                 <p> Max: 150 </p>

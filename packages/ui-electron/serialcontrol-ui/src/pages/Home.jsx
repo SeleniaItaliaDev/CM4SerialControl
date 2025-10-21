@@ -1,43 +1,56 @@
-import '../styles/Home.css';
-import { Separator } from "@/components/ui/separator"
-import VoltagePanel from '@/components/functional/VoltagePanel';
 import FrequencyPanel from '@/components/functional/FrequencyPanel';
-
+import VoltagePanel from '@/components/functional/VoltagePanel';
+import { COMMAND_TYPES } from '../../../../../shared/messageTypes';
+import { Separator } from "@/components/ui/separator"
+import { Button } from '@/components/ui/button';
+import { sendCommand } from '@/api/apiService';
+import { Info } from 'lucide-react';
+import { useState } from 'react';
+import { toast } from 'sonner';
+import '../styles/Home.css';
+import '../App.css';
 
 export default function Home({ connected }) {
-  // const [ledOn, setLedOn] = useState(false);
+  const [started, setStarted] = useState(false);
 
-  // const toggleLed = () => {
-  //   if (!ws || ws.readyState !== WebSocket.OPEN) {
-  //     toast.warning('WebSocket is not connected');
-  //     return;
-  //   }
+  const startTreatment = () => {
+    setStarted(true);
+    sendCommand(COMMAND_TYPES.START_TREATMENT);
+    toast.success('Trattamento avviato');
+  }
 
-  //   // ideally here we should have 2 functions, one for ON and one for OFF
-  //   // or at least a single function that accepts a boolean parameter
-  //   const newValue = ledOn ? true : false;
-  //   ws.send(JSON.stringify({ cmd: 'setLed', peripheral: 10, value: newValue }));
-  //   setLedOn(!ledOn);
-  // };
+  const stopTreatment = () => {
+    setStarted(false);
+    sendCommand(COMMAND_TYPES.STOP_TREATMENT);
+    toast.warning('Trattamento fermato');
+  }
 
   return (
     <div className="flex flex-col align-center items-center justify-center h-screen w-screen gap-4 homeContainer">
       {!connected && <p className="ws-error">WebSocket Disconnected</p>}
       <h1>Selenia - Teslamed</h1>
 
-      {/* <button onClick={toggleLed} className='text-white'>
-        {ledOn ? 'Turn OFF LED' : 'Turn ON LED'}
-      </button> */}
-
       <Separator className="my-4 w-3/4" />
-      <div id='controls' className='flex gap-20 align-center items-center justify-center w-full'>
+
+      <div id='controls' className='flex align-center items-center justify-evenly w-full'>
         <FrequencyPanel />
         <VoltagePanel />
       </div>
+
       <Separator className="my-4 w-3/4" />
-      
+
+      <div className='flex gap-6'>
+        <Button variant='destructive' size='lg' id='stopButton' onClick={stopTreatment} disabled={!started}> STOP </Button>
+        <Button id='startButton' size='lg' onClick={startTreatment} className={started ? 'blinking' : ''} disabled={started}> START </Button>
+      </div>
+
       <div id='footer'>
-        <p className='text-md'>Per attivare il manipolo, tenere premuto il pedale</p>
+        {started &&
+          <p className='text-md text-gray-600'>
+            <Info size={18} className='inline mb-1 mr-3' />
+            Tenere premuto il pedale durante il trattamento
+          </p>
+        }
       </div>
     </div>
   );
