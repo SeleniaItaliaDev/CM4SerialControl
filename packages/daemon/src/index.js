@@ -17,6 +17,7 @@ const broadcast = (obj) => {
 };
 
 wss.on('connection', (ws) => {
+
   console.log('✅ WS client connected');
   ws.send(JSON.stringify({ event: 'hello', perif: 33, tx: Perif33.state, rx: rxState }));
 
@@ -37,13 +38,30 @@ wss.on('connection', (ws) => {
           }
           break;
         case 'START_TREATMENT':
-          Perif33.state.mode = 'cont';
+          Perif33.state.power = 'on';
           break;
         case 'STOP_TREATMENT':
-          Perif33.state.mode = 'off';
+          Perif33.state.power = 'off';
+          break;
+        case 'SET_MODE':
+          if (msg.mode && ['puls', 'cont'].includes(msg.mode)) {
+            Perif33.state.mode = msg.mode;
+          }
           break;
       }
-      ws.send(JSON.stringify({ event: 'emitState', perif: 33, tx: Perif33.state }));
+
+      ws.send(JSON.stringify({
+        event: 'emitTxBuffer',
+        perif: 33,
+        buffer: Perif33.buffer_communication_state.last_tx
+      }));
+
+      ws.send(JSON.stringify({
+        event: 'emitState',
+        perif: 33,
+        tx: Perif33.state
+      }));
+
     } catch (e) {
       ws.send(JSON.stringify({ event: 'error', message: e.message }));
     }
