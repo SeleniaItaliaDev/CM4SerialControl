@@ -38,9 +38,7 @@ export default function VoltagePanel({ onVoltageChange }) {
                     onClick={decreaseVoltage}>
                     <Minus size={16} />
                 </Button>
-
                 <p className='text-lg'>{voltage}</p>
-
                 <Button
                     size='icon'
                     onClick={increaseVoltage}>

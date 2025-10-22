@@ -55,6 +55,19 @@ export const sendUpdatedFrequency = (ws, frequency) => {
     sendCommand(ws, JSON.stringify(msg));
 }
 
+export const sendUpdateMode = (ws, mode) => {
+    if (mode !== 'puls' && mode !== 'cont') {
+        console.error('Invalid mode:', mode);
+        return;
+    }
+
+    const msg = {
+        cmd: COMMAND_TYPES.SET_MODE,
+        mode: mode
+    };
+    sendCommand(ws, JSON.stringify(msg));
+}
+
 export const sendStartTreatment = (ws) => {
     const msg = {
         cmd: COMMAND_TYPES.START_TREATMENT

@@ -1,6 +1,7 @@
-import { sendUpdateVoltage, sendUpdatedFrequency, sendStartTreatment, sendStopTreatment } from '@/api/apiService';
+import { sendUpdateVoltage, sendUpdatedFrequency, sendStartTreatment, sendStopTreatment, sendUpdateMode } from '@/api/apiService';
 import FrequencyPanel from '@/components/functional/FrequencyPanel';
 import VoltagePanel from '@/components/functional/VoltagePanel';
+import ModePanel from '@/components/functional/ModePanel';
 import { Separator } from "@/components/ui/separator";
 import { Button } from '@/components/ui/button';
 import { Info } from 'lucide-react';
@@ -9,7 +10,7 @@ import { toast } from 'sonner';
 import '../styles/Home.css';
 import '../App.css';
 
-export default function Home({ ws, connected, currentTxState }) {
+export default function Home({ ws, connected, currentTxState, txBuffer }) {
   const [started, setStarted] = useState(false);
 
   const startTreatment = () => {
@@ -32,17 +33,25 @@ export default function Home({ ws, connected, currentTxState }) {
     sendUpdateVoltage(ws, voltage);
   }
 
+  const changeMode = (mode) => {
+    sendUpdateMode(ws, mode);
+  }
+
   return (
     <div className="flex flex-col align-center items-center justify-center h-screen w-screen gap-4 homeContainer">
       {!connected && <p className="ws-error">WebSocket Disconnected</p>}
       {currentTxState && <p className="tx-state">{currentTxState}</p>}
+      {<p className="tx-buffer">TX Buffer: {txBuffer}</p>}
       <h1>Selenia - Teslamed</h1>
 
       <Separator className="my-4 w-3/4" />
 
       <div id='controls' className='flex align-center items-center justify-evenly w-full'>
         <FrequencyPanel onFrequencyChange={changeFrequency} />
+        <Separator orientation='vertical' className='h-16' />
         <VoltagePanel onVoltageChange={changeVoltage} />
+        <Separator orientation='vertical' className='h-16' />
+        <ModePanel onModeChange={changeMode} />
       </div>
 
       <Separator className="my-4 w-3/4" />

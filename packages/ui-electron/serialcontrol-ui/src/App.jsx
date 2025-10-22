@@ -9,6 +9,7 @@ export default function App() {
   const [connected, setConnected] = useState(false);
   const reconnectTimeoutRef = useRef(null);
   const [txState, setTxState] = useState(null);
+  const [txBuffer, setTxBuffer] = useState(null);
 
   const initWebSocket = () => {
     const socket = connectWS(setWs, setConnected, toast);
@@ -21,6 +22,12 @@ export default function App() {
           case 'emitState':
             if (msg.tx) {
               setTxState(JSON.stringify(msg.tx));
+            }
+            break;
+          case 'emitTxBuffer':
+            console.log('Received emitTxBuffer:', msg);
+            if (msg.buffer) {
+              setTxBuffer(JSON.stringify(msg.buffer));
             }
             break;
         }
@@ -58,7 +65,7 @@ export default function App() {
         richColors
       />
       <Routes>
-        <Route path="/" element={<Home ws={ws} connected={connected} currentTxState={txState}/>} />
+        <Route path="/" element={<Home ws={ws} connected={connected} currentTxState={txState} txBuffer={txBuffer} />} />
       </Routes>
     </HashRouter>
   );

@@ -28,6 +28,21 @@
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
+.tx-buffer {
+    position: fixed;
+    top: 0;
+    right: 0;
+    margin: 10px;
+    padding: 10px;
+    text-align: center;
+    font-weight: 500;
+    border-radius: 8px;
+    background-color: #fff0e6;
+    color: #804000;
+    z-index: 1000;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
 .homeContainer {
     background-image: url(../assets/FOTOBASE.jpg);
     background-size: cover;
