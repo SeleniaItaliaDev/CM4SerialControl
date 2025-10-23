@@ -10,11 +10,11 @@ export default defineConfig({
   build: {
     outDir: 'dist',
     assetsDir: 'assets',
+    cssMinify: 'esbuild',
     emptyOutDir: true,
   },
   css: {
     // Force PostCSS pipeline; do NOT use lightningcss
     transformer: 'postcss',
-    minify: 'esbuild',
   }
 })
