@@ -30,16 +30,16 @@ const FLAG_POWER = 1 << 0;      // 0b00000001 - Mette il bit 0 a 1
 const FLAG_PULSMODE  = 1 << 1;  // 0b00000010 - Mette il bit 1 a 1
 const FLAG_FREQ400KHZ = 1 << 4; // 0b00010000 - Mette il bit 4 a 1
 
-export type Perif33StateType = {
-    power: 'on' | 'off';    // on, off
-    mode: 'cont' | 'puls'; // cont, puls
-    freq: 40 | 400;   // 40 or 400 (kHz)
-    volt: number;     // 0-255
-    adj: number;      // 0-255
-    pwm: number;      // 0-255 (only for 400kHz mode)
-};
+// export type Perif33StateType = {
+//     power: 'on' | 'off';    // on, off
+//     mode: 'cont' | 'puls'; // cont, puls
+//     freq: 40 | 400;   // 40 or 400 (kHz)
+//     volt: number;     // 0-255
+//     adj: number;      // 0-255
+//     pwm: number;      // 0-255 (only for 400kHz mode)
+// };
 
-export const state: Perif33StateType = {
+export const state = {
     power: 'off',   // on, off
     mode: 'cont',   // puls / cont
     freq: 400,      // 40 or 400 (kHz)
@@ -59,7 +59,7 @@ export const buffer_communication_state = {
  * @param state Current state
  * @returns Array of bytes to send
  */
-export function build(): number[] {
+export function build() {
     let out = 0;
 
     if (state.power === 'on') out |= FLAG_POWER;
@@ -77,7 +77,7 @@ export function build(): number[] {
  * Decode RX payload coming back from perif 33 for this command.
  * Shape depends on your PDF. This is a stub that pulls a few bytes.
  */
-export function decodePerif33Rx(payload: Uint8Array) {
+export function decodePerif33Rx(payload) {
     // Sanity checks
     if (payload.length < 3) return null;
 
@@ -89,4 +89,9 @@ export function decodePerif33Rx(payload: Uint8Array) {
     return { from, cmd, status, raw: Array.from(payload) };
 }
 
-export * as Perif33 from './perif33.ts';
+export const Perif33 = {
+    state,
+    buffer_communication_state,
+    build,
+    decodePerif33Rx
+};

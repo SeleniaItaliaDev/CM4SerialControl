@@ -1,5 +1,5 @@
 import { parseFrames } from './protocol_frame.js';
-import { decodePerif33Rx } from './buffers/perif33.ts';
+import { decodePerif33Rx } from './buffers/perif33.js';
 
 export function attachRx(port, rxState, wsBroadcast) {
     let acc = Buffer.alloc(0);

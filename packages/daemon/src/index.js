@@ -2,7 +2,7 @@ import { SerialPort } from 'serialport';
 import WebSocket, { WebSocketServer } from 'ws';
 import { startTxLoop } from './tx_loop.js';
 import { attachRx } from './rx.js';
-import { Perif33 } from './buffers/perif33.ts';
+import { Perif33 } from './buffers/perif33.js';
 
 const rxState = { last: null, lastSeenAt: 0 };
 

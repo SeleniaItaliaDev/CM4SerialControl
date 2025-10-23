@@ -1,5 +1,5 @@
 import { buildFrame } from './protocol_frame.js';
-import { Perif33 } from './buffers/perif33.ts';
+import { Perif33 } from './buffers/perif33.js';
 
 export function startTxLoop(port, periodMs = 100) {
     return setInterval(() => {
