@@ -24,7 +24,7 @@ function createWindow() {
   
   // Hide pointer if you want:
   // win.webContents.on('dom-ready', () => win.webContents.insertCSS('html,body{cursor:none !important;}'));
-  win.webContents.openDevTools();
+  isDev && win.webContents.openDevTools();
 }
 
 app.commandLine.appendSwitch('disable-gpu');

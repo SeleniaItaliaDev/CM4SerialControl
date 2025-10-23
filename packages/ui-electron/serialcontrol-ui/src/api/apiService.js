@@ -21,6 +21,7 @@ export const connectWS = (setWs, setConnected, toast) => {
     
     socket.onerror = (error) => {
         setConnected(false);
+        console.error('WebSocket error:', error);
         // toast.error('WebSocket error: ' + error.message);
     };
     return socket;
