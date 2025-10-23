@@ -1,0 +1,10 @@
+{
+    "name": "cm4serialcontrol-monorepo",
+    "private": true,
+    "workspaces": [
+        "packages/*"
+    ],
+    "engines": {
+        "node": "22.19.0"
+    }
+}
