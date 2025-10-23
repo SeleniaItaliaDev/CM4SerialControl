@@ -48,8 +48,11 @@ client-start-dev:
 server-start:
 	cd $(SERVER_DIR) && node src/index.js
 
-# ----- Run Client production build -----
-client-start-prod: client-build
+# ----- Run Build and Start production build -----
+client-build-start-prod: client-build
+	cd $(CLIENT_DIR) && npm run start:prod
+
+client-start-prod: 
 	cd $(CLIENT_DIR) && npm run start:prod
 
 # ----- Pi bootstrap -----

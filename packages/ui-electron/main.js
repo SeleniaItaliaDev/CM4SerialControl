@@ -23,7 +23,7 @@ function createWindow() {
   }
   
   // Hide pointer if you want:
-  // win.webContents.on('dom-ready', () => win.webContents.insertCSS('html,body{cursor:none !important;}'));
+  !isDev && win.webContents.on('dom-ready', () => win.webContents.insertCSS('html,body{cursor:none !important;}'));
   isDev && win.webContents.openDevTools();
 }
 
