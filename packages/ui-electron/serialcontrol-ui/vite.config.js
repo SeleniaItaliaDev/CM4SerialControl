@@ -14,6 +14,7 @@ export default defineConfig({
   },
   css: {
     // Force PostCSS pipeline; do NOT use lightningcss
-    transformer: 'postcss'
+    transformer: 'postcss',
+    minify: 'esbuild',
   }
 })
