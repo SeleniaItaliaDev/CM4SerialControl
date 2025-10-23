@@ -12,4 +12,8 @@ export default defineConfig({
     assetsDir: 'assets',
     emptyOutDir: true,
   },
+  css: {
+    // Force PostCSS pipeline; do NOT use lightningcss
+    transformer: 'postcss'
+  }
 })
