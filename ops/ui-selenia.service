@@ -7,7 +7,7 @@ Wants=cm4-serial-control.service
 Type=simple
 User=pi
 WorkingDirectory=/home/pi/CM4SerialControl
-ExecStart=/usr/bin/make client-start-prod
+ExecStart=npm run start:prod
 Restart=on-failure
 RestartSec=5
 # Se Electron ha bisogno del display:
