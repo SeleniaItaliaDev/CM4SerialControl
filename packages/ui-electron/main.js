@@ -21,9 +21,12 @@ function createWindow() {
   } else {
     win.loadFile(path.join(__dirname, 'serialcontrol-ui', 'dist', 'index.html'));
   }
-  
+
   // Hide pointer if you want:
-  !isDev && win.webContents.on('dom-ready', () => win.webContents.insertCSS('html,body{cursor:none !important;}'));
+  !isDev && win.webContents.on('dom-ready', (event) => {
+    let css = '* { cursor: none !important; }';
+    win.webContents.insertCSS(css);
+  });
   isDev && win.webContents.openDevTools();
 }
 

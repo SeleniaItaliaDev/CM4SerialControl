@@ -41,7 +41,7 @@ export default function Home({ ws, connected, currentTxState, txBuffer }) {
     <div className="flex flex-col align-center items-center justify-center h-screen w-screen gap-4 homeContainer">
       {!connected && <p className="ws-error">WebSocket Disconnected</p>}
       {currentTxState && <p className="tx-state">{currentTxState}</p>}
-      {<p className="tx-buffer">TX Buffer: {txBuffer}</p>}
+      {txBuffer && <p className="tx-buffer">TX Buffer: {txBuffer}</p>}
       <h1>Selenia - Teslamed</h1>
 
       <Separator className="my-4 w-3/4" />
