@@ -5,9 +5,9 @@ After=network.target
 [Service]
 Type=simple
 User=pi
-WorkingDirectory=/home/pi/Applications/CMSerialControl
+WorkingDirectory=/home/pi/Applications/CM4SerialControl
 # ExecStart=/usr/bin/node /home/pi/Applications/CMSerialControl/packages/daemon/src/index.js
-ExecStart=/usr/bin/make make server-start
+ExecStart=/usr/bin/make server-start
 Restart=on-failure
 RestartSec=5
 Environment=NODE_ENV=production
