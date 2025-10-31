@@ -1,0 +1,13 @@
+[Unit]
+Description=Nascondi il cursore del mouse
+After=graphical.target
+PartOf=graphical.target
+
+[Service]
+Type=simple
+User=pi
+ExecStart=/usr/bin/unclutter -idle 0 -root
+Restart=on-failure
+
+[Install]
+WantedBy=graphical.target

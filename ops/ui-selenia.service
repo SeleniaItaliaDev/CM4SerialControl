@@ -1,0 +1,18 @@
+[Unit]
+Description=Selenia App UI
+After=cm4-serial-control.service
+Wants=cm4-serial-control.service
+
+[Service]
+Type=simple
+User=pi
+WorkingDirectory=/home/pi/CM4SerialControl
+ExecStart=/usr/bin/make client-start-prod
+Restart=on-failure
+RestartSec=5
+# Se Electron ha bisogno del display:
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=/home/pi/.Xauthority
+
+[Install]
+WantedBy=graphical.target
