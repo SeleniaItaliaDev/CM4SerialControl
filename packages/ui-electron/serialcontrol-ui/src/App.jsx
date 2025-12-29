@@ -3,6 +3,7 @@ import { connectWS } from './api/apiService';
 import { useState, useEffect, useRef } from 'react';
 import { Toaster, toast } from 'sonner';
 import Home from './pages/Home';
+import Sinepil from "./pages/Sinepil";
 
 export default function App() {
   const [ws, setWs] = useState(null);
@@ -66,6 +67,7 @@ export default function App() {
       />
       <Routes>
         <Route path="/" element={<Home ws={ws} connected={connected} currentTxState={txState} txBuffer={txBuffer} />} />
+        <Route path="/sinepil" element={<Sinepil />} />
       </Routes>
     </HashRouter>
   );

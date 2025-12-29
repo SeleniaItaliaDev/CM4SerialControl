@@ -13,6 +13,7 @@ function createWindow() {
     webPreferences: {
       nodeIntegration: false,
       contextIsolation: true,
+      backgroundThrottling: false,
     }
   });
 
@@ -30,5 +31,12 @@ function createWindow() {
   isDev && win.webContents.openDevTools();
 }
 
-app.commandLine.appendSwitch('disable-gpu');
+// app.commandLine.appendSwitch('disable-gpu');
+// Su Linux/Raspberry, a volte è necessario passare flag hardware a Chromium
+app.commandLine.appendSwitch('enable-features', 'VaapiVideoDecoder'); // Accelerazione hardware
+app.commandLine.appendSwitch('ignore-gpu-blacklist');
+app.commandLine.appendSwitch('enable-gpu-rasterization');
+app.commandLine.appendSwitch('enable-zero-copy'); // Riduce la latenza copiando meno dati in memoria
+
+app.whenReady().then(createWindow);
 app.whenReady().then(createWindow);

@@ -1,4 +1,5 @@
 import { sendUpdateVoltage, sendUpdatedFrequency, sendStartTreatment, sendStopTreatment, sendUpdateMode } from '@/api/apiService';
+import CameraControlPanel from '@/components/functional/CameraControlPanel';
 import FrequencyPanel from '@/components/functional/FrequencyPanel';
 import VoltagePanel from '@/components/functional/VoltagePanel';
 import ModePanel from '@/components/functional/ModePanel';
@@ -9,9 +10,11 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import '../styles/Home.css';
 import '../App.css';
+import { useNavigate } from 'react-router-dom';
 
 export default function Home({ ws, connected, currentTxState, txBuffer }) {
   const [started, setStarted] = useState(false);
+  const navigate = useNavigate();
 
   const startTreatment = () => {
     setStarted(true);
@@ -37,14 +40,19 @@ export default function Home({ ws, connected, currentTxState, txBuffer }) {
     sendUpdateMode(ws, mode);
   }
 
+  const navigateToCamera = () => {
+    navigate('/sinepil');
+  }
+
   return (
     <div className="flex flex-col align-center items-center justify-center h-screen w-screen gap-4 homeContainer">
       {!connected && <p className="ws-error">WebSocket Disconnected</p>}
       {currentTxState && <p className="tx-state">{currentTxState}</p>}
       {txBuffer && <p className="tx-buffer">TX Buffer: {txBuffer}</p>}
       <h1>Selenia - Teslamed</h1>
-
       <Separator className="my-4 w-3/4" />
+      
+      <Button variant='outline' size='sm' onClick={navigateToCamera}> Test Sinepil </Button>
 
       <div id='controls' className='flex align-center items-center justify-evenly w-full'>
         <FrequencyPanel onFrequencyChange={changeFrequency} />
