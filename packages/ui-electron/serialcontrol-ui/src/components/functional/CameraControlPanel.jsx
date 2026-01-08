@@ -34,13 +34,24 @@ const CameraControlPanel = () => {
   const startCamera = async () => {
     setError('');
     try {
+      // const constraints = {
+      //   audio: false,
+      //   video: {
+      //     deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined,
+      //     width: { ideal: 1280 },
+      //     height: { ideal: 720 },
+      //     frameRate: { ideal: 30 }
+      //   }
+      // };
       const constraints = {
         audio: false,
         video: {
           deviceId: selectedDeviceId ? { exact: selectedDeviceId } : undefined,
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          frameRate: { ideal: 30 }
+          width: { ideal: 1920 }, // Prova alta risoluzione se il sensore è Sony IMX
+          height: { ideal: 1080 },
+          // Richiedere 60fps riduce drasticamente il tempo di esposizione massimo possibile
+          // costringendo la camera a essere più veloce (e ridurre la scia)
+          frameRate: { ideal: 60, min: 30 } 
         }
       };
 
