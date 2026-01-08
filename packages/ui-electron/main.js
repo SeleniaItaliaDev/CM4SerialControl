@@ -9,10 +9,11 @@ function configureCamera() {
   // Comandi V4L2 per ridurre la scia (Motion Blur)
   // NOTA: I valori 'exposure_absolute' vanno calibrati in base alla tua luce
   const commands = [
-    'v4l2-ctl -d /dev/video0 --set-ctrl=exposure_auto=1',         // Disabilita esposizione automatica
-    'v4l2-ctl -d /dev/video0 -c --set-ctrl=exposure_absolute=200', // Tempo esposizione basso (FISSO)
-    'v4l2-ctl -d /dev/video0 -c gain=30',           // Alza il gain se è buio (opzionale)
-    'v4l2-ctl -d /dev/video0 -p 30'                    // Forza 30 FPS lato driver
+    // 'v4l2-ctl -d /dev/video0 --set-ctrl=exposure_auto=1',         // Disabilita esposizione automatica
+    // 'v4l2-ctl -d /dev/video0 -c --set-ctrl=exposure_absolute=200', // Tempo esposizione basso (FISSO)
+    // 'v4l2-ctl -d /dev/video0 -c gain=30',           // Alza il gain se è buio (opzionale)
+    // 'v4l2-ctl -d /dev/video0 -p 30'                    // Forza 30 FPS lato driver
+    'v4l2-ctl -d /dev/video0 --set-fmt-video=width=3840,height=2160,pixelformat=RAW10', // Imposta risoluzione e formato RAW10
   ];
 
   commands.forEach(cmd => {
